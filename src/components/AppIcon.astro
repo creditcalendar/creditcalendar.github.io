@@ -1,0 +1,12 @@
+---
+interface Props {
+  size?: number;
+  alt?: string;
+  appearance?: 'auto' | 'light';
+}
+const { size = 32, alt = '', appearance = 'auto' } = Astro.props;
+---
+<picture class="app-icon" style={`width:${size}px;height:${size}px`}>
+  {appearance === 'auto' && <source srcset="/assets/images/symbol-dark.svg" media="(prefers-color-scheme: dark)" />}
+  <img src="/assets/images/symbol-light.svg" width={size} height={size} alt={alt} />
+</picture>
