@@ -12,7 +12,6 @@ _site
 
 # NPM dependencies
 node_modules
-package-lock.json
 
 # IDE configurations
 .idea
@@ -23,3 +22,7 @@ assets/js/dist
 
 # Python preview tools
 __pycache__/
+
+# Astro build output
+dist/
+.astro/

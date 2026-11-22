@@ -1,0 +1,28 @@
+{
+  "name": "credit-calendar-website",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check",
+    "test": "node --test tests/*.test.mjs",
+    "verify": "npm run check && npm run build && python3 tools/check.py",
+    "test:content": "python3 tools/test_content.py"
+  },
+  "dependencies": {
+    "astro": "^7.0.0",
+    "three": "^0.180.0",
+    "@astrojs/rss": "^4.0.0"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.4",
+    "@types/three": "^0.180.0",
+    "typescript": "^5.9.0"
+  },
+  "engines": {
+    "node": ">=22.23.4"
+  }
+}

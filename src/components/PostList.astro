@@ -1,0 +1,15 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { displayDate } from '../lib/posts';
+import { postURL, taxonomyURL } from '../lib/content-utils.mjs';
+interface Props { posts: CollectionEntry<'posts'>[]; }
+const { posts } = Astro.props;
+---
+{posts.length ? <div class="post-list">
+  {posts.map((post) => <article class="info-panel post-card">
+    <time datetime={post.data.date.toISOString()}>{displayDate(post.data.date)}</time>
+    <h2><a href={postURL(post.id)}>{post.data.title}</a></h2>
+    <p>{post.data.description}</p>
+    <div class="tag-list">{post.data.tags.map((tag) => <a class="tag" href={taxonomyURL('tags', tag)}>{tag}</a>)}</div>
+  </article>)}
+</div> : <div class="info-panel"><h2>No updates just yet.</h2><p>Product news and updates will appear here. Looking for deals? Explore the Doctor of Credit feed in the app.</p></div>}

@@ -1,0 +1,14 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import PostList from '../../components/PostList.astro';
+import { publishedPosts } from '../../lib/posts';
+const posts = await publishedPosts();
+---
+<Layout title="Feed — Credit Calendar">
+  <section class="inner section">
+    <p class="eyebrow">FROM CREDIT CALENDAR</p><h1>A place for<br />what’s next.</h1>
+    <p class="intro">Product news, useful tips, and updates from Credit Calendar.</p>
+    <div class="archive-links"><a href="/search/">Search articles</a><a href="/archives/">Archives</a><a href="/tags/">Tags</a><a href="/categories/">Categories</a><a href="/feed.xml">RSS</a></div>
+    <PostList posts={posts} />
+  </section>
+</Layout>

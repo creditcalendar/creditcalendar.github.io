@@ -1,0 +1,47 @@
+---
+import '../styles/site.css';
+interface Props { title: string; description?: string; article?: boolean; }
+const { title, description = 'Discover deals, keep track of important dates, and organize your credit cards with Credit Calendar for iPhone and iPad.', article = false } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const navigation = [['/', 'Overview'], ['/feed/', 'Feed'], ['/contact/', 'Contact Us'], ['/developer/', 'Developer']];
+const isCurrent = (path: string) => path === '/' ? Astro.url.pathname === '/' : Astro.url.pathname.startsWith(path);
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#F7F6F2" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content={article ? 'article' : 'website'} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={new URL('/assets/images/creditcalendar.jpg', Astro.site)} />
+    <link rel="icon" href="/assets/img/favicons/favicon.ico" />
+    <link rel="apple-touch-icon" href="/assets/img/favicons/apple-touch-icon.png" />
+    <link rel="alternate" type="application/rss+xml" title="Credit Calendar updates" href="/feed.xml" />
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+    <header>
+      <div class="navigation">
+        <a class="brand" href="/"><img src="/assets/images/creditcalendar.jpg" alt="" width="32" height="32" />Credit Calendar<span class="brand-dot" aria-hidden="true">✦</span></a>
+        <nav aria-label="Main navigation">
+          {navigation.map(([href, label]) => <a href={href} aria-current={isCurrent(href) ? 'page' : undefined}>{label}</a>)}
+        </nav>
+        <a class="nav-download" href="https://apps.apple.com/app/id1254202950">Get the app ↗</a>
+      </div>
+    </header>
+    <main id="main"><slot /></main>
+    <footer>
+      <div><a class="brand" href="/">Credit Calendar</a><p>Made for the way you discover, save, and spend.</p></div>
+      <div class="footer-links"><a href="/feed/">Feed</a><a href="/search/">Search</a><a href="/contact/">Contact Us</a><a href="/developer/">Developer</a><a href="/feed.xml">RSS</a></div>
+      <p class="disclaimer">Credit Calendar is an independent, unofficial app. It is not affiliated with or endorsed by Doctor of Credit.</p>
+      <p class="copyright">© {new Date().getFullYear()} Credit Calendar · Ching-Lan Chen</p>
+    </footer>
+  </body>
+</html>

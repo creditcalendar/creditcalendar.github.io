@@ -1,0 +1,40 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { publishedPosts } from '../../lib/posts';
+import { postURL } from '../../lib/content-utils.mjs';
+const posts = await publishedPosts();
+---
+<Layout title="Search articles — Credit Calendar"><section class="inner section">
+  <p class="eyebrow">FIND SOMETHING GOOD</p><h1>Search articles</h1>
+  <p class="intro">Search this website’s updates. To search Doctor of Credit articles, open the app.</p>
+  <label for="article-search">Title, topic, or phrase</label>
+  <input id="article-search" type="search" placeholder="Search updates…" autocomplete="off" />
+  <p id="search-status" role="status">{posts.length ? `${posts.length} articles` : 'No updates published yet.'}</p>
+  <noscript><p>Enable JavaScript to filter articles, or browse the list below.</p></noscript>
+  <div id="search-results">
+    {posts.map((post) => <article class="info-panel" data-search={[post.data.title, post.data.description, ...post.data.tags, ...post.data.categories, post.body ?? ''].join(' ')}>
+      <h2><a href={postURL(post.id)}>{post.data.title}</a></h2><p>{post.data.description}</p>
+    </article>)}
+  </div>
+</section></Layout>
+<script>
+  import { matchesSearch } from '../../lib/content-utils.mjs';
+  const input = document.querySelector<HTMLInputElement>('#article-search')!;
+  const status = document.querySelector<HTMLElement>('#search-status')!;
+  const articles = [...document.querySelectorAll<HTMLElement>('[data-search]')];
+  function search() {
+    let count = 0;
+    for (const article of articles) {
+      article.hidden = !matchesSearch(article.dataset.search ?? '', input.value);
+      if (!article.hidden) count++;
+    }
+    status.textContent = articles.length === 0 ? 'No updates published yet.' : count ? `${count} ${count === 1 ? 'article' : 'articles'} found` : 'No matching articles. Try another search.';
+    const url = new URL(location.href);
+    if (input.value.trim()) url.searchParams.set('q', input.value.trim());
+    else url.searchParams.delete('q');
+    history.replaceState(null, '', url);
+  }
+  input.value = new URLSearchParams(location.search).get('q') ?? '';
+  input.addEventListener('input', search);
+  search();
+</script>

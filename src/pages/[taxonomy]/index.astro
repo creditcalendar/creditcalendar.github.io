@@ -1,0 +1,16 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { publishedPosts } from '../../lib/posts';
+import { taxonomyURL } from '../../lib/content-utils.mjs';
+export function getStaticPaths() { return ['tags', 'categories'].map((taxonomy) => ({ params: { taxonomy } })); }
+const taxonomy = Astro.params.taxonomy as 'tags' | 'categories';
+const title = taxonomy === 'tags' ? 'Tags' : 'Categories';
+const posts = await publishedPosts();
+const names = [...new Set(posts.flatMap((post) => post.data[taxonomy]))].sort((a, b) => a.localeCompare(b));
+---
+<Layout title={`${title} — Credit Calendar`}><section class="inner section">
+  <p class="eyebrow">FIND YOUR NEXT READ</p><h1>{title}</h1>
+  <div class="tag-list">{names.map((name) => <a class="tag" href={taxonomyURL(taxonomy, name)}>{name} <span>({posts.filter((post) => post.data[taxonomy].includes(name)).length})</span></a>)}</div>
+  {!names.length && <div class="info-panel"><h2>No {title.toLowerCase()} yet.</h2><p>Browse by topic once updates are published.</p></div>}
+  <p><a class="text-link" href="/feed/">All updates</a></p>
+</section></Layout>

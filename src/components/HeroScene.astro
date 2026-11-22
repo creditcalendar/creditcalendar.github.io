@@ -1,0 +1,53 @@
+<hero-scene aria-hidden="true"></hero-scene>
+
+<script>
+  class HeroScene extends HTMLElement {
+    private teardown?: () => void;
+    private controller?: AbortController;
+    private generation = 0;
+
+    connectedCallback() {
+      this.controller = new AbortController();
+      const signal = this.controller.signal;
+      const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+      let visible = false;
+      let loading = false;
+      const update = async () => {
+        if (reducedMotion.matches) {
+          this.generation++;
+          this.teardown?.();
+          this.teardown = undefined;
+          loading = false;
+          return;
+        }
+        if (!visible || loading || this.teardown) return;
+        loading = true;
+        const generation = ++this.generation;
+        try {
+          const { createHeroScene } = await import('../scripts/hero-scene');
+          if (signal.aborted || generation !== this.generation || reducedMotion.matches) return;
+          this.teardown = createHeroScene(this);
+        } catch {
+          // The HTML/CSS phone stays visible if WebGL or the module cannot load.
+        } finally {
+          if (generation === this.generation) loading = false;
+        }
+      };
+      const observer = new IntersectionObserver(([entry]) => {
+        visible = entry.isIntersecting;
+        void update();
+      });
+      observer.observe(this);
+      signal.addEventListener('abort', () => observer.disconnect(), { once: true });
+      reducedMotion.addEventListener('change', update, { signal });
+    }
+
+    disconnectedCallback() {
+      this.generation++;
+      this.controller?.abort();
+      this.teardown?.();
+      this.teardown = undefined;
+    }
+  }
+  customElements.define('hero-scene', HeroScene);
+</script>
