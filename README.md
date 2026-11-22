@@ -1,45 +1,57 @@
-# Chirpy Starter [![Gem Version](https://img.shields.io/gem/v/jekyll-theme-chirpy)](https://rubygems.org/gems/jekyll-theme-chirpy) [![GitHub license](https://img.shields.io/github/license/cotes2020/chirpy-starter.svg?color=blue)][mit]
+# Credit Calendar website
 
-When installing the [**Chirpy**][chirpy] theme through [RubyGems.org][gem], Jekyll can only read files in the folders `/_data`, `/_layouts`, `/_includes`, `/_sass` and `/assets`, as well as a small part of options of the `/_config.yml` file from the theme's gem. If you have ever installed this theme gem, you can use the command `bundle info --path jekyll-theme-chirpy` to locate these files.
+A responsive, standalone product website for Credit Calendar. Plain HTML and CSS,
+with Python's standard library for building and local preview. No Chirpy, Jekyll,
+Ruby, Node, or third-party packages are needed.
 
-The Jekyll team claims that this is to leave the ball in the user’s court, but this also results in users not being able to enjoy the out-of-the-box experience when using feature-rich themes.
+## Local preview
 
-To fully use all the features of **Chirpy**, you need to copy the other critical files from the theme's gem to your Jekyll site. The following is a list of targets:
+From the repository root, with Python 3 installed:
 
-```shell
-.
-├── _config.yml
-├── _plugins
-├── _tabs
-└── index.html
+```sh
+python3 tools/serve.py
 ```
 
-To save you time, and also in case you lose some files while copying, we extract those files/configurations of the latest version of the **Chirpy** theme and the [CD][CD] workflow to here, so that you can start writing in minutes.
+Open http://127.0.0.1:4000. Stop with Ctrl+C. After editing source files, restart
+the command and refresh the browser. This preview does not provide live reload.
 
-## Prerequisites
+## Build and verify
 
-Follow the instructions in the [Jekyll Docs](https://jekyllrb.com/docs/installation/) to complete the installation of the basic environment. [Git](https://git-scm.com/) also needs to be installed.
-
-## Installation
-
-Sign in to GitHub and [**use this template**][use-template] to generate a brand new repository and name it `USERNAME.github.io`, where `USERNAME` represents your GitHub username.
-
-Then clone it to your local machine and run:
-
-```
-$ bundle
+```sh
+python3 tools/build.py
+python3 tools/check.py
 ```
 
-## Usage
+`_site/` is generated output; do not edit it. The build copies only explicitly
+listed public paths, so development files are not published.
 
-Please see the [theme's docs](https://github.com/cotes2020/jekyll-theme-chirpy#documentation).
+## Content
 
-## License
+- `index.html`: product overview. The phone is a clearly labeled HTML/CSS
+  illustration, not an actual screenshot. Replace it with current app screenshots
+  when finalizing the marketing artwork.
+- `assets/css/site.css`: shared responsive styling.
+- `contact/index.html`: support email and support guidance.
+- `developer/index.html`: developer information and existing social links.
+- `feed/index.html`: product updates landing page (currently empty).
+- `feed.xml`: valid, currently empty Atom feed at the original RSS URL.
+- `about/`, `archives/`, `categories/`, `tags/`: retained legacy routes.
+- `app-ads.txt`: advertising declarations, copied verbatim to the site root.
 
-This work is published under [MIT][mit] License.
+Header and footer HTML are shared by convention across pages. When changing
+navigation, update all pages and run the checker. To publish future updates,
+add the update content to the Feed page and corresponding entries in `feed.xml`;
+there is no CMS or automatic Markdown feed generator.
 
-[gem]: https://rubygems.org/gems/jekyll-theme-chirpy
-[chirpy]: https://github.com/cotes2020/jekyll-theme-chirpy/
-[use-template]: https://github.com/cotes2020/chirpy-starter/generate
-[CD]: https://en.wikipedia.org/wiki/Continuous_deployment
-[mit]: https://github.com/cotes2020/chirpy-starter/blob/master/LICENSE
+The old Jekyll configuration, Gemfile, `_tabs`, `_data`, and `_plugins` are retained
+as migration reference only and excluded from the build. Existing bundled theme
+assets under `assets/lib` are also excluded.
+
+## Deployment
+
+GitHub Actions builds, checks, and deploys `_site/` on pushes to `main` or `master`.
+GitHub repository Settings → Pages → Source should be **GitHub Actions**.
+The site is intended for the root domain https://creditcalendar.github.io.
+
+After deploying, verify https://creditcalendar.github.io/app-ads.txt returns the
+expected plain text. Updating this file does not require changes to the homepage.
