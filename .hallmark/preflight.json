@@ -1,0 +1,20 @@
+{
+  "depth": "polish",
+  "genre": "editorial",
+  "preserved": [
+    "AppPreview by explicit user request",
+    "Astro and Three.js",
+    "cyan accent",
+    "neon download capsule",
+    "light and dark surfaces",
+    "all routes and links"
+  ],
+  "files": [
+    "src/pages/index.astro",
+    "src/pages/contact/index.astro",
+    "src/pages/developer/index.astro",
+    "src/layouts/Layout.astro",
+    "src/styles/site.css"
+  ],
+  "source": "existing project and user instructions"
+}

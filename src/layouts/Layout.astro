@@ -36,15 +36,15 @@ const isCurrent = (path: string) => path === '/' ? Astro.url.pathname === '/' : 
         <nav aria-label="Main navigation">
           {navigation.map(([href, label]) => <a href={href} aria-current={isCurrent(href) ? 'page' : undefined}>{label}</a>)}
         </nav>
-        <a class="nav-download" href="https://apps.apple.com/app/id1254202950">Get the app ↗</a>
+        <a class="nav-download" href="https://apps.apple.com/app/id1254202950">Get the app</a>
       </div>
     </header>
     <main id="main"><slot /></main>
     <footer>
-      <div><a class="brand" href="/">Credit Calendar</a><p>Made for the way you discover, save, and spend.</p></div>
+      <div><a class="brand" href="/">Credit Calendar</a><p>Read Doctor of Credit on iPhone and iPad.</p></div>
       <div class="footer-links"><a href="/feed/">Feed</a><a href="/search/">Search</a><a href="/contact/">Contact Us</a><a href="/developer/">Developer</a><a href="/feed.xml">RSS</a></div>
       <p class="disclaimer">Credit Calendar is an independent, unofficial app. It is not affiliated with or endorsed by Doctor of Credit.</p>
-      <p class="copyright">© {new Date().getFullYear()} Credit Calendar · Ching-Lan Chen</p>
+      <p class="copyright">© {new Date().getFullYear()} Credit Calendar, Ching-Lan Chen</p>
     </footer>
   </body>
 </html>

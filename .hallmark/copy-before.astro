@@ -1,0 +1,26 @@
+---
+import Layout from '../layouts/Layout.astro';
+import HeroScene from '../components/HeroScene.astro';
+import AppIcon from '../components/AppIcon.astro';
+import AppPreview from '../components/AppPreview.astro';
+---
+<Layout title="Your everyday advantage — Credit Calendar">
+
+<section class="hero"><p class="eyebrow">YOUR EVERYDAY ADVANTAGE · FOR IPHONE & IPAD</p><h1>A little more organized.<br><span>A lot more rewarding.</span></h1><p class="intro">Great deals. Important dates. Your favorite cards.<br>Bring it all together with Credit Calendar.</p><div class="actions"><a class="button primary" href="https://apps.apple.com/app/id1254202950"><svg aria-hidden="true" viewBox="0 0 24 24"><path fill="currentColor" d="M16.6 12.8c0-2 1.6-3 1.7-3.1-1-1.5-2.5-1.7-3.1-1.7-1.3-.1-2.5.8-3.2.8-.6 0-1.6-.8-2.7-.8-1.4 0-2.7.8-3.4 2-1.5 2.5-.4 6.3 1 8.4.7 1 1.5 2 2.6 1.9 1-.1 1.4-.6 2.7-.6 1.2 0 1.6.6 2.7.6 1.1 0 1.8-1 2.5-2 .8-1.1 1.1-2.2 1.1-2.3-.1 0-1.9-.7-1.9-3.2ZM14.5 6.6c.6-.8 1.1-1.8 1-2.9-.9 0-2 .6-2.7 1.4-.6.7-1.1 1.8-1 2.8 1 .1 2-.5 2.7-1.3Z"/></svg>Download on the App Store</a><a class="button secondary" href="#features">Explore the app</a></div><p class="availability">Designed for iPhone and iPad</p>
+<div class="showcase" aria-label="Credit Calendar app preview">
+  <HeroScene />
+  <AppPreview />
+</div><p class="preview-caption">A preview of the Credit Calendar experience.</p></section>
+
+
+<section class="features section" id="features"><div class="section-heading"><p class="eyebrow">LESS JUGGLING. MORE DISCOVERING.</p><h2>Everything worth keeping.<br>One place to keep it.</h2><p>From your morning read to your next great find,<br>make Credit Calendar part of your everyday.</p></div><div class="feature-grid">
+<article class="feature"><p class="eyebrow">SEARCH</p><h3>Your next great deal<br>starts with a good read.</h3><p>Search Doctor of Credit articles or browse categories to find the offers that matter to you.</p></article>
+<article class="feature"><p class="eyebrow">DEAL CALENDAR</p><h3>A date with<br>your next opportunity.</h3><p>See deal dates on a monthly calendar and explore the offers listed for each day.</p></article>
+<article class="feature"><p class="eyebrow">SAVINGS</p><h3>Find your best<br>way to pay.</h3><p>Search for a store or product. Let AI help you compare offers and payment options.</p></article>
+<article class="feature"><p class="eyebrow">YOUR LIBRARY</p><h3>Make it<br>your own.</h3><p>Access your bookmarks, cards, and settings in one place. Manage iCloud sync and notification preferences.</p></article>
+</div></section>
+
+
+<section class="closing section"><AppIcon size={72} alt="Credit Calendar app icon" /><p class="eyebrow">A SMALL APP. AN EVERYDAY DIFFERENCE.</p><h2>Make room for<br><span>more rewarding days.</span></h2><a class="button primary" href="https://apps.apple.com/app/id1254202950">Get Credit Calendar</a><p>Have a question? <a href="/contact/">Let’s talk.</a></p></section>
+
+</Layout>
