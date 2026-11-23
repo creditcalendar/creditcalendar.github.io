@@ -21,7 +21,7 @@
 .home :is(a, button):focus-visible { outline: 2px solid var(--focus); outline-offset: 4px; }
 .hero-explore { display: inline-flex; align-items: center; min-height: 48px; border: 1px solid var(--line); border-radius: 999px; padding: 0 20px; font-size: 14px; font-weight: 400; }
 .hero-explore:hover { border-color: var(--muted); text-decoration: none; }
-.hero-index { display: flex; gap: clamp(16px, 3vw, 44px); border-top: 1px solid var(--line); padding: 16px 0; margin-top: 48px; }
+.hero-index { display: flex; width: fit-content; max-width: 100%; gap: clamp(16px, 3vw, 44px); border-top: 1px solid var(--line); padding: 16px 0; margin-top: 48px; }
 .hero-index a { font-size: 13px; font-weight: 400; }
 .hero-index span { display: block; font-size: 11px; font-variant-numeric: tabular-nums; color: var(--muted); margin-bottom: 8px; }
 .phone-display { position: relative; isolation: isolate; display: grid; place-items: center; min-height: clamp(540px, 52vw, 640px); padding: 24px 12px; }
@@ -32,12 +32,11 @@
 }
 .phone-wrap { width: min(90%, clamp(160px, 16vw, 192px)); user-select: none; transform: translate(var(--phone-x, 0px), var(--phone-y, 0px)) perspective(var(--phone-perspective, 600px)) rotateY(var(--phone-yaw, 0rad)) rotateX(var(--phone-pitch, 0rad)) rotateZ(var(--phone-roll, 0rad)); }
 @media (min-width: 651px) {
-  .phone-stage { width: min(100%, 456px); margin-inline-start: -28px; }
-  .hero-index {
-    width: calc(100% + clamp(44px, 7vw, 96px));
-    margin-top: 52px;
-    background: linear-gradient(90deg, var(--bg) 78%, color-mix(in srgb, var(--bg) 86%, transparent));
-  }
+  .phone-stage { width: min(100%, 520px); margin-inline-start: clamp(-120px, -9vw, -56px); }
+  .phone-display { min-height: clamp(580px, 57vw, 728px); }
+  .phone-display hero-scene { inset-inline: -64%; }
+  .phone-wrap { width: min(90%, clamp(192px, 21vw, 260px)); }
+  .hero-index { margin-top: 52px; }
 }
 .home-section { border-top: 1px solid var(--line); padding: 80px 0; scroll-margin-top: 20px; }
 .reader-strip { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px 64px; align-items: start; }
