@@ -1,4 +1,4 @@
-import { BufferGeometry, Color, Float32BufferAttribute, OrthographicCamera, Points, Scene, ShaderMaterial, WebGLRenderer } from 'three';
+import { BufferGeometry, Color, Float32BufferAttribute, OrthographicCamera, PerspectiveCamera, Points, Scene, ShaderMaterial, WebGLRenderer } from 'three';
 
 // Units are relative to the App Preview's width. Its front face sits at z = 0.
 function phoneParticles() {
@@ -52,11 +52,131 @@ function phoneParticles() {
   return positions;
 }
 
+function createAtmosphere(pixelRatio: number) {
+  const scene = new Scene();
+  const camera = new PerspectiveCamera(38, 1, .1, 25);
+  camera.position.set(0, .46, 3.8);
+  camera.lookAt(0, 0, 0);
+  scene.rotation.order = 'YXZ';
+  const time = { value: 0 };
+  const tint = { value: new Color() };
+  const positions: number[] = [];
+  const layers: number[] = [];
+  const trackPositions: number[] = [];
+  const addPoint = (x: number, y: number, z: number, layer: number, track = 0) => {
+    positions.push(x, y, z);
+    layers.push(layer);
+    trackPositions.push(track);
+  };
+  for (let i = 0; i < 980; i++) {
+    const star = i < 720;
+    addPoint(
+      (Math.random() - .5) * (star ? 24 : 11),
+      star ? -.45 + Math.random() * 9 : (Math.random() - .5) * 6,
+      star ? -9 - Math.random() * 10 : 1.9 - Math.random() * 10,
+      0,
+    );
+  }
+  // Sample a level stage in staggered, oblique rows.
+  const stageRows = 222;
+  const stageColumns = 288;
+  for (let row = 0; row < stageRows; row++) {
+    for (let column = 0; column < stageColumns; column++) {
+      const across = (column - stageColumns / 2 + (row % 2) * .5) * (16.5 / stageColumns);
+      const back = 2.7 - row * (14 / stageRows);
+      const x = across * .96 + back * .28;
+      const z = back * .96 - across * .28;
+      addPoint(x, -1.19, z, 1);
+    }
+  }
+  // Overlapping ellipsoids give the cloud banks body and soft edges.
+  for (let bank = 0; bank < 17; bank++) {
+    const centerX = (bank - 8) * .72;
+    const centerY = .08 + .32 * Math.sin(bank * 1.12);
+    const centerZ = -5.4 - (bank % 4) * 1.7;
+    for (let i = 0; i < 520; i++) {
+      const x = Math.random() * 2 - 1;
+      const y = Math.random() * 2 - 1;
+      const z = Math.random() * 2 - 1;
+      if (x * x + y * y + z * z > 1) continue;
+      addPoint(centerX + x * 1.65, centerY + y * .35 + x * .13, centerZ + z * 1.4, 2);
+    }
+  }
+
+  // Sample hanging arcs as individual points, with staggered light pulses.
+  for (let arc = 0; arc < 6; arc++) {
+    for (let i = 0; i <= 390; i++) {
+      const t = i / 390;
+      const x = (t - .5) * (7.4 + arc * .7);
+      const y = 1.0 + arc * .13 + x * x * (.12 + .018 * arc) + x * Math.sin(arc * 1.4) * .18;
+      const z = -1.1 - arc * .52 + Math.sin(t * Math.PI) * .85;
+      addPoint(x, y, z, 3, t + arc * .29);
+    }
+  }
+  const geometry = new BufferGeometry();
+  geometry.setAttribute('position', new Float32BufferAttribute(positions, 3));
+  geometry.setAttribute('layer', new Float32BufferAttribute(layers, 1));
+  geometry.setAttribute('trackPosition', new Float32BufferAttribute(trackPositions, 1));
+  const material = new ShaderMaterial({
+    transparent: true,
+    depthWrite: false,
+    uniforms: { time, pixelRatio: { value: pixelRatio }, tint },
+    vertexShader: `
+      attribute float layer, trackPosition;
+      uniform float time, pixelRatio;
+      varying float opacity, softness, highlight;
+      void main() {
+        float seed = fract(sin(dot(position.xz, vec2(21.37, 58.63))) * 7215.13);
+        vec3 p = position;
+        float ground = 1.0 - step(.5, abs(layer - 1.0));
+        float cloud = 1.0 - step(.5, abs(layer - 2.0));
+        float track = step(2.5, layer);
+        float dust = (1.0 - step(.5, layer)) * smoothstep(-10.0, -7.0, p.z);
+        p.x += cloud * sin(time * .19 + p.z * .4) * .24;
+        p.y += dust * sin(seed * 20.0 + time * .34) * .11;
+        vec4 view = modelViewMatrix * vec4(p, 1.0);
+        float depth = -view.z;
+        float nearBlur = (1.0 - smoothstep(1.15, 3.35, depth)) * dust;
+        float distanceFade = exp(-depth * .085);
+        float glow = exp(-length(vec2(p.x * .8, p.z * .43)));
+        float pulse = .65 + .35 * sin(time * .48 + p.z * .9 + seed * 3.0);
+        float sky = mix(.18 + seed * .47, (.34 + seed * .58) * pulse, dust);
+        float terrain = (.32 + glow * .62) * (1.0 - smoothstep(3.8, 7.4, abs(p.x)));
+        opacity = mix(sky * sqrt(distanceFade), terrain * distanceFade, ground);
+        float beam = 1.0 - smoothstep(.008, .082, abs(fract(trackPosition - time * .15) - .5));
+        opacity = mix(opacity, (.025 + seed * .052) * distanceFade, cloud);
+        opacity = mix(opacity, (.21 + beam * .64) * distanceFade, track);
+        highlight = max(track * beam, ground * glow * .48);
+        softness = max(nearBlur, cloud * .85);
+        gl_Position = projectionMatrix * view;
+        float skySize = clamp((8.0 + seed * 17.0) / depth, 1.15, 3.8) + nearBlur * 9.0;
+        float terrainSize = clamp(5.6 / depth, .72, 1.65);
+        float pointSize = mix(skySize, terrainSize, ground);
+        pointSize = mix(pointSize, 9.0 + seed * 12.0, cloud);
+        pointSize = mix(pointSize, 1.15 + beam * 1.5, track);
+        gl_PointSize = pixelRatio * pointSize;
+      }`,
+    fragmentShader: `
+      uniform vec3 tint;
+      varying float opacity, softness, highlight;
+      void main() {
+        float radius = length(gl_PointCoord - .5) * 2.0;
+        float edge = 1.0 - smoothstep(mix(.52, .06, softness), 1.0, radius);
+        gl_FragColor = vec4(mix(tint, vec3(1.0), highlight * .55), edge * opacity * mix(1.0, .64, softness));
+        #include <colorspace_fragment>
+      }`,
+  });
+  scene.add(new Points(geometry, material));
+  return { scene, camera, geometry, material };
+}
+
 export function createHeroScene(host: HTMLElement): () => void {
   const showcase = host.parentElement!;
   const screen = host.dataset.variant === 'phone' ? showcase.querySelector<HTMLElement>('.phone-wrap') : null;
   const renderer = new WebGLRenderer({ alpha: true, antialias: true, powerPreference: 'low-power' });
-  renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5));
+  const pixelRatio = Math.min(devicePixelRatio, 1.5);
+  renderer.setPixelRatio(pixelRatio);
+  renderer.autoClear = false;
   renderer.setClearColor(0x000000, 0);
   renderer.domElement.setAttribute('aria-hidden', 'true');
   host.append(renderer.domElement);
@@ -81,10 +201,12 @@ export function createHeroScene(host: HTMLElement): () => void {
   geometry.setAttribute('position', new Float32BufferAttribute(screen ? phoneParticles() : positions, 3));
   const color = new Color(getComputedStyle(host).getPropertyValue('--cyan').trim());
   const tint = color.clone();
-  if (screen) {
+  const atmosphere = screen ? createAtmosphere(pixelRatio) : null;
+  if (atmosphere) {
     const darkMode = matchMedia('(prefers-color-scheme: dark)');
     const updatePalette = () => {
       tint.setHex(darkMode.matches ? 0xffffff : 0x000000);
+      atmosphere.material.uniforms.tint.value.setHex(darkMode.matches ? 0xb8d9ff : 0x537188);
     };
     updatePalette();
     darkMode.addEventListener('change', updatePalette, { signal });
@@ -96,7 +218,7 @@ export function createHeroScene(host: HTMLElement): () => void {
     uniforms: {
       time: { value: 0 },
       tint: { value: tint },
-      pixelRatio: { value: Math.min(devicePixelRatio, 1.5) },
+      pixelRatio: { value: pixelRatio },
     },
     vertexShader: `uniform float time; uniform float pixelRatio; varying float intensity;
       void main() {
@@ -149,7 +271,7 @@ export function createHeroScene(host: HTMLElement): () => void {
     if (screen) {
       const ease = 1 - Math.exp(-delta * 5);
       const yaw = trackingPointer ? -pointerX * .72 : Math.sin(elapsed * .48) * .44;
-      const pitch = trackingPointer ? pointerY * .27 : Math.sin(elapsed * .31) * .09;
+      const pitch = -.14 + (trackingPointer ? pointerY * .27 : Math.sin(elapsed * .31) * .06);
       points.rotation.y += (yaw - points.rotation.y) * ease;
       points.rotation.x += (pitch - points.rotation.x) * ease;
       // Match the orthographic projection. CSS uses a downward-positive Y axis.
@@ -158,6 +280,13 @@ export function createHeroScene(host: HTMLElement): () => void {
     } else {
       points.rotation.y += (pointerX * .08 - points.rotation.y) * .04;
       points.rotation.x += (pointerY * .05 - points.rotation.x) * .04;
+    }
+    renderer.clear();
+    if (atmosphere) {
+      atmosphere.scene.rotation.copy(points.rotation);
+      atmosphere.material.uniforms.time.value = elapsed;
+      renderer.render(atmosphere.scene, atmosphere.camera);
+      renderer.clearDepth();
     }
     renderer.render(scene, camera);
     frame = requestAnimationFrame(render);
@@ -170,9 +299,9 @@ export function createHeroScene(host: HTMLElement): () => void {
     frame = 0;
     previousFrame = undefined;
   }
-  const resize = new ResizeObserver(([entry]) => {
+  const resize = new ResizeObserver(() => {
     if (disposed) return;
-    const { width, height } = entry.contentRect;
+    const { clientWidth: width, clientHeight: height } = host;
     if (!width || !height) return;
     const screenWidth = screen?.offsetWidth;
     const halfWidth = screenWidth ? width / (2 * screenWidth) : Math.max(5, width / height * 3.3);
@@ -182,10 +311,15 @@ export function createHeroScene(host: HTMLElement): () => void {
     camera.top = halfHeight;
     camera.bottom = -halfHeight;
     camera.updateProjectionMatrix();
+    if (atmosphere) {
+      atmosphere.camera.aspect = width / height;
+      atmosphere.camera.updateProjectionMatrix();
+    }
     renderer.setSize(width, height);
     resume();
   });
   resize.observe(host);
+  if (screen) resize.observe(screen);
   const observer = new IntersectionObserver(([entry]) => {
     visible = entry.isIntersecting;
     if (visible) resume(); else pause();
@@ -214,6 +348,8 @@ export function createHeroScene(host: HTMLElement): () => void {
     observer.disconnect();
     geometry.dispose();
     material.dispose();
+    atmosphere?.geometry.dispose();
+    atmosphere?.material.dispose();
     renderer.dispose();
     renderer.domElement.remove();
     screen?.style.removeProperty('--phone-yaw');
