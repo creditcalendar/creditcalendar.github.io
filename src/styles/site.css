@@ -24,13 +24,24 @@
   --glass-highlight: rgb(255 255 255 / .9);
   --glass-shadow: rgb(0 0 0 / .08);
   --glass-hover: rgb(255 255 255 / .18);
-  --container: 1100px;
+  --container: 1440px;
+  --gutter: 64px;
   font-family: var(--font-body);
+}
+@media (max-width: 60rem) {
+  :root { --gutter: 24px; }
+}
+@media (max-width: 40rem) {
+  :root { --gutter: 16px; }
 }
 @media (prefers-color-scheme: dark) {
   :root { --bg: #000; --surface: #1c1c1e; --text: #f7f6f2; --muted: #aeaeb2; --line: #38383a; --focus: var(--cyan); --glass-fill: rgb(28 28 30 / .30); --glass-edge: rgb(255 255 255 / .16); --glass-highlight: rgb(255 255 255 / .23); --glass-shadow: rgb(0 0 0 / .3); --glass-hover: rgb(255 255 255 / .08); }
 }
 * { box-sizing: border-box; }
+.home, .section, .navigation, footer {
+  width: calc(min(100%, var(--container)) - 2 * var(--gutter));
+  margin-inline: auto;
+}
 html, body { overflow-x: clip; }
 html { scroll-behavior: smooth; scroll-padding-top: 112px; }
 body { margin: 0; background: var(--bg); color: var(--text); font-size: 16px; line-height: 1.6; }
@@ -42,7 +53,7 @@ button, a { -webkit-tap-highlight-color: var(--clear); }
 a:active { opacity: .75; }
 .skip { position: fixed; top: -80px; left: 20px; z-index: 10; background: var(--neon); color: var(--button-ink); padding: 12px; }
 .skip:focus { top: 12px; }
-header { position: sticky; top: 6px; z-index: 5; padding: 0 16px; margin-top: 6px; pointer-events: none; }
+header { position: sticky; top: 6px; z-index: 5; margin-top: 6px; pointer-events: none; }
 /* Keep the backdrop on the capsule so content remains visible around its edges. */
 header .navigation {
   position: relative;
@@ -63,7 +74,7 @@ header nav a { padding: 10px 12px; transition: color .18s; }
 header nav a:hover:not([aria-current]) { color: var(--text); text-decoration: none; }
 header .brand:hover { text-decoration: none; }
 header nav { gap: 4px; }
-.navigation { max-width: none; padding: 4px 8px 4px 24px; margin: auto; display: flex; align-items: center; gap: 24px; }
+.navigation { padding: 4px 8px 4px 24px; display: flex; align-items: center; gap: 24px; }
 .brand { display: flex; align-items: center; gap: 12px; font-weight: 650; font-size: 18px; letter-spacing: -.4px; white-space: nowrap; }
 .brand .app-icon { width: 1.15em; height: 1.15em; }
 .brand img { border-radius: .22em; }
@@ -89,7 +100,7 @@ p { text-wrap: pretty; }
 .showcase { max-width: 950px; margin: 48px auto 0; padding: 12px 0 28px; position: relative; display: flex; justify-content: center; align-items: center; }
 hero-scene { position: absolute; inset: 0; display: block; pointer-events: none; opacity: .65; }
 hero-scene canvas { display: block; width: 100%; height: 100%; }
-.section { max-width: var(--container); margin: auto; padding: 96px 32px; }
+.section { padding-block: 96px; }
 .section-heading { display: grid; grid-template-columns: minmax(0,1.3fr) minmax(0,1fr); gap: 48px; margin-bottom: 40px; align-items: end; }
 .section-heading h2, .closing h2 { font-size: clamp(32px,4vw,48px); line-height: 1.15; letter-spacing: -.035em; margin-bottom: 0; font-weight: 600; }
 .section-heading>p:last-child { color: var(--muted); margin: 0; }
@@ -103,7 +114,7 @@ hero-scene canvas { display: block; width: 100%; height: 100%; }
 .closing h2 { max-width: 22ch; margin: 0 auto 28px; }
 .closing>p:last-child { font-size: 14px; margin-top: 20px; color: var(--muted); }
 .closing>p a { text-decoration: underline; }
-footer { max-width: var(--container); margin: auto; border-top: 1px solid var(--line); padding: 36px 32px; display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 24px; }
+footer { border-top: 1px solid var(--line); padding-block: 36px; display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 24px; }
 footer p { color: var(--muted); font-size: 13px; margin: 8px 0 0; }
 .footer-links { display: flex; gap: 24px; font-size: 13px; align-items: start; padding-top: 4px; }
 .footer-links a { white-space: nowrap; }
@@ -128,7 +139,7 @@ footer p { color: var(--muted); font-size: 13px; margin: 8px 0 0; }
 .post-card time { color: var(--muted); font-size: 14px; }
 .post-card h2 { margin-top: 12px; }
 .post-list .info-panel { max-width: none; }
-.article { max-width: 850px; }
+.article .prose { max-width: 786px; }
 .article-date { margin-top: 36px; }
 .article h1 { font-size: clamp(36px,5vw,56px); overflow-wrap: anywhere; }
 .prose { margin-top: 40px; overflow-wrap: anywhere; }
@@ -146,7 +157,6 @@ footer p { color: var(--muted); font-size: 13px; margin: 8px 0 0; }
 .app-icon { display: inline-block; flex-shrink: 0; vertical-align: middle; }
 .app-icon img { display: block; width: 100%; height: 100%; }
 @media (max-width: 850px) {
-  header { top: 6px; padding: 0 12px; margin-top: 6px; }
   header .navigation { border-radius: 32px; }
   .navigation { flex-wrap: wrap; gap: 4px 12px; padding: 4px 12px; }
   .brand { font-size: 16px; }
@@ -167,7 +177,6 @@ footer p { color: var(--muted); font-size: 13px; margin: 8px 0 0; }
   .intro { font-size: 17px; }
   .hero .actions { flex-direction: column; }
   .showcase { margin-top: 36px; }
-  .section { padding-left: 24px; padding-right: 24px; }
   .feature-grid { grid-template-columns: minmax(0,1fr); }
   .navigation { padding-left: 16px; padding-right: 16px; gap: 8px; }
   .brand { font-size: 14px; gap: 8px; }
@@ -179,7 +188,7 @@ footer p { color: var(--muted); font-size: 13px; margin: 8px 0 0; }
   header .nav-download { padding: 8px 12px; font-size: 12px; }
   .info-panel { padding: 24px; }
   .inner h1 { font-size: 40px; }
-  footer { padding: 32px 24px; }
+  footer { padding-block: 32px; }
 }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
