@@ -94,16 +94,19 @@ function createAtmosphere(pixelRatio: number) {
     }
   }
   // Overlapping ellipsoids give the cloud banks body and soft edges.
-  for (let bank = 0; bank < 17; bank++) {
-    const centerX = (bank - 8) * .72;
-    const centerY = .08 + .32 * Math.sin(bank * 1.12);
-    const centerZ = -5.4 - (bank % 4) * 1.7;
-    for (let i = 0; i < 2600; i++) {
+  for (let bank = 0; bank < 24; bank++) {
+    const upper = bank >= 17;
+    const centerX = upper ? (bank - 20) * 2.2 : (bank - 8) * .98;
+    const centerY = upper ? 5.1 + .48 * Math.sin(bank * 1.12) : .55 + .40 * Math.sin(bank * 1.12);
+    const centerZ = -10.8 - (bank % 4) * 1.7;
+    const samples = upper ? 1250 : 1450;
+    const verticalSpread = upper ? .35 : .24;
+    for (let i = 0; i < samples; i++) {
       const x = Math.random() * 2 - 1;
       const y = Math.random() * 2 - 1;
       const z = Math.random() * 2 - 1;
       if (x * x + y * y + z * z > 1) continue;
-      addPoint(centerX + x * 1.65, centerY + y * .35 + x * .13, centerZ + z * 1.4, 2);
+      addPoint(centerX + x * 2.25, centerY + y * verticalSpread + x * .13, centerZ + z * 1.4, 2);
     }
   }
 
@@ -142,7 +145,8 @@ function createAtmosphere(pixelRatio: number) {
         float skySize = clamp((8.0 + seed * 17.0) / depth, 1.15, 3.8) + nearBlur * 9.0;
         float terrainSize = clamp(4.2 / depth, .68, 1.3);
         float pointSize = mix(skySize, terrainSize, ground);
-        pointSize = mix(pointSize, 1.05 + seed * 1.35, cloud);
+        float cloudSize = clamp((12.5 + seed * 15.0) / depth, .72, 1.9);
+        pointSize = mix(pointSize, cloudSize, cloud);
         gl_PointSize = pixelRatio * pointSize;
       }`,
     fragmentShader: `
