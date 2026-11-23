@@ -80,11 +80,24 @@ export function createHeroScene(host: HTMLElement): () => void {
   const geometry = new BufferGeometry();
   geometry.setAttribute('position', new Float32BufferAttribute(screen ? phoneParticles() : positions, 3));
   const color = new Color(getComputedStyle(host).getPropertyValue('--cyan').trim());
+  const tint = color.clone();
+  if (screen) {
+    const darkMode = matchMedia('(prefers-color-scheme: dark)');
+    const updatePalette = () => {
+      tint.setHex(darkMode.matches ? 0xffffff : 0x000000);
+    };
+    updatePalette();
+    darkMode.addEventListener('change', updatePalette, { signal });
+  }
   const material = new ShaderMaterial({
     transparent: true,
     depthWrite: false,
     defines: screen ? { PHONE: 1 } : {},
-    uniforms: { time: { value: 0 }, tint: { value: color }, pixelRatio: { value: Math.min(devicePixelRatio, 1.5) } },
+    uniforms: {
+      time: { value: 0 },
+      tint: { value: tint },
+      pixelRatio: { value: Math.min(devicePixelRatio, 1.5) },
+    },
     vertexShader: `uniform float time; uniform float pixelRatio; varying float intensity;
       void main() {
       #ifdef PHONE
@@ -108,7 +121,7 @@ export function createHeroScene(host: HTMLElement): () => void {
       void main() {
       #ifdef PHONE
         float edge = 1.0 - smoothstep(.18, .5, distance(gl_PointCoord, vec2(.5)));
-        gl_FragColor = vec4(mix(tint, vec3(1.0), intensity * .58), edge * (.44 + intensity * .54));
+        gl_FragColor = vec4(mix(tint, vec3(1.0), intensity), edge * (.44 + intensity * .54));
         #include <colorspace_fragment>
       #else
         if (distance(gl_PointCoord, vec2(0.5)) > 0.5) discard;
