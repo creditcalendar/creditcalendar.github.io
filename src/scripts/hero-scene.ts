@@ -62,11 +62,9 @@ function createAtmosphere(pixelRatio: number) {
   const tint = { value: new Color() };
   const positions: number[] = [];
   const layers: number[] = [];
-  const trackPositions: number[] = [];
-  const addPoint = (x: number, y: number, z: number, layer: number, track = 0) => {
+  const addPoint = (x: number, y: number, z: number, layer: number) => {
     positions.push(x, y, z);
     layers.push(layer);
-    trackPositions.push(track);
   };
   for (let i = 0; i < 980; i++) {
     const star = i < 720;
@@ -103,26 +101,15 @@ function createAtmosphere(pixelRatio: number) {
     }
   }
 
-  // Sample hanging arcs as individual points, with staggered light pulses.
-  for (let arc = 0; arc < 6; arc++) {
-    for (let i = 0; i <= 390; i++) {
-      const t = i / 390;
-      const x = (t - .5) * (7.4 + arc * .7);
-      const y = 1.0 + arc * .13 + x * x * (.12 + .018 * arc) + x * Math.sin(arc * 1.4) * .18;
-      const z = -1.1 - arc * .52 + Math.sin(t * Math.PI) * .85;
-      addPoint(x, y, z, 3, t + arc * .29);
-    }
-  }
   const geometry = new BufferGeometry();
   geometry.setAttribute('position', new Float32BufferAttribute(positions, 3));
   geometry.setAttribute('layer', new Float32BufferAttribute(layers, 1));
-  geometry.setAttribute('trackPosition', new Float32BufferAttribute(trackPositions, 1));
   const material = new ShaderMaterial({
     transparent: true,
     depthWrite: false,
     uniforms: { time, pixelRatio: { value: pixelRatio }, tint },
     vertexShader: `
-      attribute float layer, trackPosition;
+      attribute float layer;
       uniform float time, pixelRatio;
       varying float opacity, softness, highlight;
       void main() {
@@ -130,7 +117,6 @@ function createAtmosphere(pixelRatio: number) {
         vec3 p = position;
         float ground = 1.0 - step(.5, abs(layer - 1.0));
         float cloud = 1.0 - step(.5, abs(layer - 2.0));
-        float track = step(2.5, layer);
         float dust = (1.0 - step(.5, layer)) * smoothstep(-10.0, -7.0, p.z);
         p.x += cloud * sin(time * .19 + p.z * .4) * .24;
         p.y += dust * sin(seed * 20.0 + time * .34) * .11;
@@ -143,17 +129,14 @@ function createAtmosphere(pixelRatio: number) {
         float sky = mix(.18 + seed * .47, (.34 + seed * .58) * pulse, dust);
         float terrain = (.32 + glow * .62) * (1.0 - smoothstep(3.8, 7.4, abs(p.x)));
         opacity = mix(sky * sqrt(distanceFade), terrain * distanceFade, ground);
-        float beam = 1.0 - smoothstep(.008, .082, abs(fract(trackPosition - time * .15) - .5));
         opacity = mix(opacity, (.025 + seed * .052) * distanceFade, cloud);
-        opacity = mix(opacity, (.21 + beam * .64) * distanceFade, track);
-        highlight = max(track * beam, ground * glow * .48);
+        highlight = ground * glow * .48;
         softness = max(nearBlur, cloud * .85);
         gl_Position = projectionMatrix * view;
         float skySize = clamp((8.0 + seed * 17.0) / depth, 1.15, 3.8) + nearBlur * 9.0;
         float terrainSize = clamp(5.6 / depth, .72, 1.65);
         float pointSize = mix(skySize, terrainSize, ground);
         pointSize = mix(pointSize, 9.0 + seed * 12.0, cloud);
-        pointSize = mix(pointSize, 1.15 + beam * 1.5, track);
         gl_PointSize = pixelRatio * pointSize;
       }`,
     fragmentShader: `
