@@ -59,14 +59,14 @@ header .navigation {
     backdrop-filter: blur(20px) saturate(160%);
   }
 }
-header nav a { border-radius: 24px; padding: 10px 12px; transition: background-color .18s; }
-header nav a:hover { background: var(--glass-hover); text-decoration: none; }
-header nav a[aria-current] { background: var(--clear); }
+header nav a { padding: 10px 12px; transition: color .18s; }
+header nav a:hover:not([aria-current]) { color: var(--text); text-decoration: none; }
 header .brand:hover { text-decoration: none; }
 header nav { gap: 4px; }
 .navigation { max-width: none; padding: 4px 8px 4px 24px; margin: auto; display: flex; align-items: center; gap: 24px; }
 .brand { display: flex; align-items: center; gap: 12px; font-weight: 650; font-size: 18px; letter-spacing: -.4px; white-space: nowrap; }
-.brand img { border-radius: 8px; }
+.brand .app-icon { width: 1.15em; height: 1.15em; }
+.brand img { border-radius: .22em; }
 nav { display: flex; gap: 24px; margin-left: auto; font-size: 14px; color: var(--muted); }
 nav a { padding: 8px 0; white-space: nowrap; }
 nav a[aria-current] { color: var(--text); text-decoration: underline; text-decoration-color: var(--accent); text-decoration-thickness: 2px; text-underline-offset: 8px; }
