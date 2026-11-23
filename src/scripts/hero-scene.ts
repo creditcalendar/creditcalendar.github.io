@@ -1,12 +1,17 @@
-import { BufferGeometry, Color, Float32BufferAttribute, OrthographicCamera, PerspectiveCamera, Points, Scene, ShaderMaterial, WebGLRenderer } from 'three';
+import { BufferGeometry, Color, Float32BufferAttribute, OrthographicCamera, PerspectiveCamera, Points, Quaternion, Scene, ShaderMaterial, Vector3, WebGLRenderer } from 'three';
+
+const stageFloorY = -1.19;
+const stageCenterZ = -1.4;
+const phoneHalfHeight = 2048 / 944 / 2 + .05;
+const phoneThickness = .14;
+const phoneBevel = .016;
+const phonePerspective = 3.1;
 
 // Units are relative to the App Preview's width. Its front face sits at z = 0.
 function phoneParticles() {
   const positions: number[] = [];
   const halfWidth = .55;
-  const halfHeight = 2048 / 944 / 2 + .05;
   const radius = .17;
-  const thickness = .14;
   const depthSegments = 14;
   const sideSegments = 264;
   const endSegments = 104;
@@ -15,10 +20,10 @@ function phoneParticles() {
   // Sample straight edges and quarter-circle corners at a consistent spacing.
   for (let layer = 0; layer <= depthSegments; layer++) {
     const depth = layer / depthSegments;
-    const z = -thickness * depth;
-    const bevel = .016 * Math.abs(depth * 2 - 1) ** 3;
+    const z = -phoneThickness * depth;
+    const bevel = phoneBevel * Math.abs(depth * 2 - 1) ** 3;
     const width = halfWidth - bevel;
-    const height = halfHeight - bevel;
+    const height = phoneHalfHeight - bevel;
     for (const side of [-1, 1]) {
       for (let i = 0; i <= sideSegments; i++) {
         const y = (2 * i / sideSegments - 1) * (height - radius);
@@ -55,8 +60,9 @@ function phoneParticles() {
 function createAtmosphere(pixelRatio: number) {
   const scene = new Scene();
   const camera = new PerspectiveCamera(38, 1, .1, 25);
-  camera.position.set(0, .46, 3.8);
+  camera.position.set(0, -.52, 3.8);
   camera.lookAt(0, 0, 0);
+  camera.updateMatrixWorld();
   scene.rotation.order = 'YXZ';
   const time = { value: 0 };
   const tint = { value: new Color() };
@@ -76,15 +82,15 @@ function createAtmosphere(pixelRatio: number) {
     );
   }
   // Sample a level stage in staggered, oblique rows.
-  const stageRows = 222;
-  const stageColumns = 288;
+  const stageRows = 330;
+  const stageColumns = 432;
   for (let row = 0; row < stageRows; row++) {
     for (let column = 0; column < stageColumns; column++) {
       const across = (column - stageColumns / 2 + (row % 2) * .5) * (16.5 / stageColumns);
       const back = 2.7 - row * (14 / stageRows);
       const x = across * .96 + back * .28;
       const z = back * .96 - across * .28;
-      addPoint(x, -1.19, z, 1);
+      addPoint(x, stageFloorY, z, 1);
     }
   }
   // Overlapping ellipsoids give the cloud banks body and soft edges.
@@ -107,10 +113,10 @@ function createAtmosphere(pixelRatio: number) {
   const material = new ShaderMaterial({
     transparent: true,
     depthWrite: false,
-    uniforms: { time, pixelRatio: { value: pixelRatio }, tint },
+    uniforms: { time, pixelRatio: { value: pixelRatio }, tint, stageCenterZ: { value: stageCenterZ } },
     vertexShader: `
       attribute float layer;
-      uniform float time, pixelRatio;
+      uniform float time, pixelRatio, stageCenterZ;
       varying float opacity, softness, highlight;
       void main() {
         float seed = fract(sin(dot(position.xz, vec2(21.37, 58.63))) * 7215.13);
@@ -124,7 +130,7 @@ function createAtmosphere(pixelRatio: number) {
         float depth = -view.z;
         float nearBlur = (1.0 - smoothstep(1.15, 3.35, depth)) * dust;
         float distanceFade = exp(-depth * .085);
-        float glow = exp(-length(vec2(p.x * .8, p.z * .43)));
+        float glow = exp(-length(vec2(p.x * .8, (p.z - stageCenterZ) * .43)));
         float pulse = .65 + .35 * sin(time * .48 + p.z * .9 + seed * 3.0);
         float sky = mix(.18 + seed * .47, (.34 + seed * .58) * pulse, dust);
         float terrain = (.32 + glow * .62) * (1.0 - smoothstep(3.8, 7.4, abs(p.x)));
@@ -134,7 +140,7 @@ function createAtmosphere(pixelRatio: number) {
         softness = max(nearBlur, cloud * .85);
         gl_Position = projectionMatrix * view;
         float skySize = clamp((8.0 + seed * 17.0) / depth, 1.15, 3.8) + nearBlur * 9.0;
-        float terrainSize = clamp(5.6 / depth, .72, 1.65);
+        float terrainSize = clamp(4.2 / depth, .68, 1.3);
         float pointSize = mix(skySize, terrainSize, ground);
         pointSize = mix(pointSize, 9.0 + seed * 12.0, cloud);
         gl_PointSize = pixelRatio * pointSize;
@@ -202,8 +208,10 @@ export function createHeroScene(host: HTMLElement): () => void {
       time: { value: 0 },
       tint: { value: tint },
       pixelRatio: { value: pixelRatio },
+      phonePerspective: { value: phonePerspective },
+      phoneCenter: { value: new Vector3() },
     },
-    vertexShader: `uniform float time; uniform float pixelRatio; varying float intensity;
+    vertexShader: `uniform float time, pixelRatio, phonePerspective; uniform vec3 phoneCenter; varying float intensity;
       void main() {
       #ifdef PHONE
         float sweep = mod(time * .48 + 1.5, 3.5) - 1.75;
@@ -212,7 +220,9 @@ export function createHeroScene(host: HTMLElement): () => void {
         intensity = exp(-band * band);
         float grain = fract(sin(dot(position, vec3(419.2, 317.9, 127.1))) * 4375.93);
         vec3 jitter = vec3(grain - .5, fract(grain * 97.7) - .5, fract(grain * 47.9) - .5) * .005;
-        gl_Position = projectionMatrix * modelViewMatrix * vec4(position + jitter, 1.0);
+        vec4 world = modelMatrix * vec4(position + jitter, 1.0);
+        world.xy = phoneCenter.xy + (world.xy - phoneCenter.xy) / (1.0 - world.z / phonePerspective);
+        gl_Position = projectionMatrix * viewMatrix * world;
         gl_PointSize = (.72 + grain * .48 + intensity * .5) * pixelRatio;
       #else
         float sweep = mod(time * 1.4, 14.0) - 7.0;
@@ -235,6 +245,7 @@ export function createHeroScene(host: HTMLElement): () => void {
       }`,
   });
   const points = new Points(geometry, material);
+  material.uniforms.phoneCenter.value = points.position;
   points.rotation.order = 'YXZ';
   scene.add(points);
   let visible = false;
@@ -244,6 +255,10 @@ export function createHeroScene(host: HTMLElement): () => void {
   let trackingPointer = false;
   let elapsed = 0;
   let previousFrame: number | undefined;
+  let screenWidth = 0;
+  const stageContact = new Vector3();
+  const phoneFoot = new Vector3();
+  const stageViewRotation = new Quaternion();
   const render = (time: number) => {
     frame = 0;
     if (disposed || !visible || document.hidden) return;
@@ -251,22 +266,37 @@ export function createHeroScene(host: HTMLElement): () => void {
     previousFrame = time;
     elapsed += delta;
     material.uniforms.time.value = screen ? elapsed : time * .001;
-    if (screen) {
+    if (screen && atmosphere) {
       const ease = 1 - Math.exp(-delta * 5);
       const yaw = trackingPointer ? -pointerX * .72 : Math.sin(elapsed * .48) * .44;
-      const pitch = -.14 + (trackingPointer ? pointerY * .27 : Math.sin(elapsed * .31) * .06);
-      points.rotation.y += (yaw - points.rotation.y) * ease;
-      points.rotation.x += (pitch - points.rotation.x) * ease;
-      // Match the orthographic projection. CSS uses a downward-positive Y axis.
+      const pitch = trackingPointer ? pointerY * .20 : Math.sin(elapsed * .31) * .06;
+      const stageRotation = atmosphere.scene.rotation;
+      stageRotation.y += (yaw - stageRotation.y) * ease;
+      stageRotation.x += (pitch * .55 - stageRotation.x) * ease;
+      // The phone follows the stage normal, expressed in the camera's view.
+      stageViewRotation.copy(atmosphere.camera.quaternion).invert().multiply(atmosphere.scene.quaternion);
+      points.rotation.setFromQuaternion(stageViewRotation);
+      // Project the floor contact into the phone's orthographic coordinates.
+      stageContact.set(0, stageFloorY, stageCenterZ).applyEuler(atmosphere.scene.rotation).project(atmosphere.camera);
+      phoneFoot.set(0, -phoneHalfHeight, -phoneThickness / 2).applyEuler(points.rotation);
+      const footScale = 1 / (1 - phoneFoot.z / phonePerspective);
+      points.position.set(
+        stageContact.x * camera.right - phoneFoot.x * footScale,
+        stageContact.y * camera.top - phoneFoot.y * footScale,
+        0,
+      );
+      // Match the screen's CSS perspective with its downward-positive Y axis.
+      screen.style.setProperty('--phone-x', `${points.position.x * screenWidth}px`);
+      screen.style.setProperty('--phone-y', `${-points.position.y * screenWidth}px`);
       screen.style.setProperty('--phone-yaw', `${points.rotation.y}rad`);
       screen.style.setProperty('--phone-pitch', `${-points.rotation.x}rad`);
+      screen.style.setProperty('--phone-roll', `${-points.rotation.z}rad`);
     } else {
       points.rotation.y += (pointerX * .08 - points.rotation.y) * .04;
       points.rotation.x += (pointerY * .05 - points.rotation.x) * .04;
     }
     renderer.clear();
     if (atmosphere) {
-      atmosphere.scene.rotation.copy(points.rotation);
       atmosphere.material.uniforms.time.value = elapsed;
       renderer.render(atmosphere.scene, atmosphere.camera);
       renderer.clearDepth();
@@ -286,7 +316,8 @@ export function createHeroScene(host: HTMLElement): () => void {
     if (disposed) return;
     const { clientWidth: width, clientHeight: height } = host;
     if (!width || !height) return;
-    const screenWidth = screen?.offsetWidth;
+    screenWidth = screen?.offsetWidth ?? 0;
+    screen?.style.setProperty('--phone-perspective', `${screenWidth * phonePerspective}px`);
     const halfWidth = screenWidth ? width / (2 * screenWidth) : Math.max(5, width / height * 3.3);
     const halfHeight = screenWidth ? height / (2 * screenWidth) : 3.3;
     camera.left = -halfWidth;
@@ -337,6 +368,10 @@ export function createHeroScene(host: HTMLElement): () => void {
     renderer.domElement.remove();
     screen?.style.removeProperty('--phone-yaw');
     screen?.style.removeProperty('--phone-pitch');
+    screen?.style.removeProperty('--phone-roll');
+    screen?.style.removeProperty('--phone-x');
+    screen?.style.removeProperty('--phone-y');
+    screen?.style.removeProperty('--phone-perspective');
   }
   renderer.domElement.addEventListener('webglcontextlost', dispose, { signal });
   return dispose;

@@ -30,7 +30,7 @@
   opacity: 1;
   mask-image: radial-gradient(ellipse 50% 69%, var(--button-ink) 62%, transparent 100%);
 }
-.phone-wrap { width: min(90%, clamp(160px, 16vw, 192px)); user-select: none; transform: rotateY(var(--phone-yaw, 0rad)) rotateX(var(--phone-pitch, 0rad)); }
+.phone-wrap { width: min(90%, clamp(160px, 16vw, 192px)); user-select: none; transform: translate(var(--phone-x, 0px), var(--phone-y, 0px)) perspective(var(--phone-perspective, 600px)) rotateY(var(--phone-yaw, 0rad)) rotateX(var(--phone-pitch, 0rad)) rotateZ(var(--phone-roll, 0rad)); }
 @media (min-width: 651px) {
   .phone-stage { width: min(100%, 456px); margin-inline-start: -28px; }
   .hero-index {
