@@ -1,4 +1,7 @@
-<hero-scene aria-hidden="true"></hero-scene>
+---
+const { variant = 'calendar' } = Astro.props as { variant?: 'calendar' | 'phone' };
+---
+<hero-scene aria-hidden="true" data-variant={variant}></hero-scene>
 
 <script>
   class HeroScene extends HTMLElement {

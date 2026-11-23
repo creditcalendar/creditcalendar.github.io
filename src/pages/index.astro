@@ -3,24 +3,68 @@ import Layout from '../layouts/Layout.astro';
 import HeroScene from '../components/HeroScene.astro';
 import AppIcon from '../components/AppIcon.astro';
 import AppPreview from '../components/AppPreview.astro';
+import '../styles/home.css';
+const days = Array.from({length: 30}, (_, i) => i + 1);
+const marked = [7, 12, 18, 24, 27];
 ---
 <Layout title="Doctor of Credit for iPhone & iPad — Credit Calendar">
+  <div class="home">
+    <section class="home-hero">
+      <div class="hero-copy">
+        <p class="section-label"><span class="status-dot"></span> Credit Calendar / iPhone + iPad</p>
+        <h1>Read the deals.<br />Keep the dates.</h1>
+        <p class="intro">Doctor of Credit, with room to read. Browse the latest posts, save an offer, and see what’s coming up.</p>
+        <div class="actions"><a class="button primary" href="https://apps.apple.com/app/id1254202950">Download on the App Store <span aria-hidden="true">↗</span></a><a class="hero-explore" href="#features">Explore the app <span aria-hidden="true">↓</span></a></div>
+        <p class="availability">An independent reader for iPhone and iPad</p>
+        <div class="hero-index"><a href="#reader"><span>01</span> Read the feed</a><a href="#calendar"><span>02</span> Follow the dates</a><a href="#features"><span>03</span> Keep an offer</a></div>
+      </div>
+      <div class="phone-stage">
+        <div class="stage-label"><span>Feed / App preview</span><span aria-hidden="true">01 — 03</span></div>
+        <div class="phone-display">
+          <HeroScene variant="phone" />
+          <div class="phone-wrap"><AppPreview /></div>
+        </div>
+        <p class="stage-caption">Doctor of Credit. A little easier to read.</p>
+      </div>
+    </section>
 
-<section class="hero"><h1>Read Doctor of Credit.<br>On your iPhone.</h1><p class="intro">Read the posts, save offers, and keep deal dates in view.</p><div class="actions"><a class="button primary" href="https://apps.apple.com/app/id1254202950"><svg aria-hidden="true" viewBox="0 0 24 24"><path fill="currentColor" d="M16.6 12.8c0-2 1.6-3 1.7-3.1-1-1.5-2.5-1.7-3.1-1.7-1.3-.1-2.5.8-3.2.8-.6 0-1.6-.8-2.7-.8-1.4 0-2.7.8-3.4 2-1.5 2.5-.4 6.3 1 8.4.7 1 1.5 2 2.6 1.9 1-.1 1.4-.6 2.7-.6 1.2 0 1.6.6 2.7.6 1.1 0 1.8-1 2.5-2 .8-1.1 1.1-2.2 1.1-2.3-.1 0-1.9-.7-1.9-3.2ZM14.5 6.6c.6-.8 1.1-1.8 1-2.9-.9 0-2 .6-2.7 1.4-.6.7-1.1 1.8-1 2.8 1 .1 2-.5 2.7-1.3Z"/></svg>Download on the App Store</a><a class="button secondary" href="#features">Explore the app</a></div><p class="availability">An independent reader for iPhone and iPad</p>
-<div class="showcase" aria-label="Credit Calendar app preview">
-  <HeroScene />
-  <AppPreview />
-</div><p class="preview-caption">A preview of the Credit Calendar experience.</p></section>
+    <section class="reader-strip home-section" id="reader"><p class="section-label">01 / The reader</p><h2>The posts you follow.<br /><span>Made for your screen.</span></h2><p>Browse Doctor of Credit by category, search for an offer, or pick up an article you saved earlier.</p><a class="text-link" href="/feed/">Visit the website feed <span aria-hidden="true">↗</span></a></section>
 
+    <section class="calendar-section home-section" id="calendar">
+      <div class="calendar-intro"><p class="section-label">02 / Deal Calendar</p><h2>A date gives<br />a deal context.</h2><p>Move through the month and explore the offers listed for each day. A calendar keeps the dates alongside the deals.</p><p class="demo-instruction">Try a marked date <span aria-hidden="true">↘</span></p></div>
+      <div class="calendar-instrument">
+        <div class="calendar-visual"><HeroScene /><div class="calendar-heading"><h3>November <span>2026</span></h3><span class="section-label">Sample month</span></div>
+        <div class="calendar-week" aria-hidden="true">{['S','M','T','W','T','F','S'].map(day => <span>{day}</span>)}</div>
+        <div class="calendar-days" role="group" aria-label="Sample November 2026 deal dates">{days.map(day => marked.includes(day) ? <button type="button" data-day={day} aria-label={`November ${day}, sample deals`} aria-pressed={day === 7}><span>{day}</span><i aria-hidden="true"></i></button> : <span class="quiet-day">{day}</span>)}</div>
+        </div>
+        <div class="deal-detail" aria-live="polite" aria-atomic="true"><div class="deal-date"><span class="section-label">Selected date</span><strong id="selected-date">Nov 07</strong></div><div><span class="section-label">Illustrative offer</span><h3 id="selected-deal">Explore a checking account bonus</h3><p id="selected-description">Review the offer and its qualifying requirements.</p></div><span class="deal-marker" aria-hidden="true">01</span></div>
+        <p class="sample-note">Interactive preview. Sample offers, not current promotions.</p>
+      </div>
+    </section>
 
-<section class="features section" id="features"><div class="section-heading"><h2>Read. Find. Keep track.</h2><p>Browse the feed, then use these tools to follow up on an offer.</p></div><div class="feature-grid">
-<article class="feature"><h3>Search Doctor of Credit</h3><p>Search Doctor of Credit articles or browse categories to find the offers that matter to you.</p></article>
-<article class="feature"><h3>See deal dates</h3><p>See deal dates on a monthly calendar and explore the offers listed for each day.</p></article>
-<article class="feature"><h3>Compare ways to pay</h3><p>Search for a store or product. Let AI help you compare offers and payment options.</p></article>
-<article class="feature"><h3>Keep your bookmarks and cards</h3><p>Access your bookmarks, cards, and settings in one place. Manage iCloud sync and notification preferences.</p></article>
-</div></section>
-
-
-<section class="closing section"><AppIcon size={72} alt="Credit Calendar app icon" /><h2>Credit Calendar for iPhone and iPad</h2><a class="button primary" href="https://apps.apple.com/app/id1254202950">Get Credit Calendar</a><p>Have a question? <a href="/contact/">Contact support.</a></p></section>
-
+    <section class="home-section tools-section" id="features"><div><p class="section-label">03 / Your next step</p><h2>Found something<br />worth keeping?</h2><p class="tools-intro">Go from reading an offer to finding it again.</p></div><div class="tool-rows">
+      <article><span class="tool-number">01</span><div><h3>Search Doctor of Credit</h3><p>Search articles or browse categories to find the offers that matter to you.</p></div><span class="tool-symbol" aria-hidden="true">⌕</span></article>
+      <article><span class="tool-number">02</span><div><h3>Compare ways to pay</h3><p>Search for a store or product. Let AI help you compare offers and payment options.</p></div><span class="tool-symbol" aria-hidden="true">⇄</span></article>
+      <article><span class="tool-number">03</span><div><h3>Keep bookmarks and cards</h3><p>Access your bookmarks, cards, and settings in one place. Manage iCloud sync and notification preferences.</p></div><span class="tool-symbol" aria-hidden="true">＋</span></article>
+    </div></section>
+    <section class="home-section home-closing"><AppIcon size={72} alt="Credit Calendar app icon" /><div><p class="section-label">Made for iPhone and iPad</p><h2>Your next read<br />is waiting.</h2><p>Have a question? <a href="/contact/">Contact support.</a></p></div><a class="button primary" href="https://apps.apple.com/app/id1254202950">Get Credit Calendar <span aria-hidden="true">↗</span></a></section>
+  </div>
 </Layout>
+<script>
+  const samples: Record<string, [string, string]> = {
+    '7': ['Explore a checking account bonus', 'Review the offer and its qualifying requirements.'],
+    '12': ['Activate an eligible rewards offer', 'Check the activation steps before making a purchase.'],
+    '18': ['Take a closer look at a gift card offer', 'Read the terms and check which retailers qualify.'],
+    '24': ['Compare payment options for an order', 'Review the available offers before you check out.'],
+    '27': ['Revisit an offer before it ends', 'Check the deadline and any remaining requirements.'],
+  };
+  document.querySelectorAll<HTMLButtonElement>('[data-day]').forEach(button => {
+    button.addEventListener('click', () => {
+      const day = button.dataset.day!;
+      document.querySelectorAll('[data-day]').forEach(item => item.setAttribute('aria-pressed', String(item === button)));
+      document.getElementById('selected-date')!.textContent = `Nov ${day.padStart(2, '0')}`;
+      document.getElementById('selected-deal')!.textContent = samples[day][0];
+      document.getElementById('selected-description')!.textContent = samples[day][1];
+    });
+  });
+</script>
