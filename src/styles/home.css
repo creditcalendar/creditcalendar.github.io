@@ -45,25 +45,28 @@
 .reader-strip .text-link { grid-column: 2; justify-self: start; text-decoration: underline; }
 .calendar-section { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: 64px; align-items: center; }
 .calendar-intro>p:not(.section-label) { color: var(--muted); max-width: 32ch; }
-.calendar-instrument { display: block; }
-.calendar-visual { position: relative; isolation: isolate; padding: 28px; background: var(--surface); border: 1px solid var(--line); }
-.calendar-visual hero-scene { z-index: -1; opacity: .24; overflow: hidden; }
-.calendar-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 24px; }
-.calendar-heading h3 { font-size: 24px; font-weight: 500; letter-spacing: -.04em; margin: 0; }
-.calendar-week, .calendar-days { display: grid; grid-template-columns: repeat(7,minmax(0,1fr)); text-align: center; }
-.calendar-week { font-size: 12px; font-variant-numeric: tabular-nums; color: var(--muted); padding-bottom: 16px; }
-.calendar-days>* { height: 56px; border: 0; border-top: 1px solid var(--line); display: flex; align-items: center; justify-content: center; position: relative; font: 400 14px var(--font-home); font-variant-numeric: tabular-nums; }
-.calendar-days button { cursor: pointer; background: var(--clear); color: var(--text); transition: background .2s; }
-.calendar-days button:hover { background: color-mix(in srgb,var(--cyan) 12%,var(--surface)); }
-.calendar-days button[aria-pressed=true] { background: var(--cyan); color: var(--button-ink); }
-.calendar-days i { position: absolute; width: 4px; height: 4px; border-radius: 50%; background: var(--cyan); bottom: 9px; }
-.calendar-days button[aria-pressed=true] i { background: var(--button-ink); }
-.calendar-days button[aria-current=date] { font-weight: 700; text-decoration: underline; text-underline-offset: 4px; }
-.deal-detail { display: grid; grid-template-columns: 76px minmax(0, 1fr); gap: 20px; align-items: start; padding: 24px 0 8px; min-height: 162px; }
-.deal-detail p, .sample-note { font-size: 12px; color: var(--muted); margin: 0; }
-.deal-detail ul { margin: 0; padding-inline-start: 1.25em; }
-.deal-detail li + li { margin-top: 8px; }
-.deal-detail a { text-decoration: underline; }
+.calendar-instrument { display: block; min-width: 0; background: var(--bg); font-family: var(--font-body); }
+.calendar-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 0 16px; }
+.calendar-heading h3 { font-size: clamp(24px, 3vw, 36px); font-weight: 700; margin: 0; }
+.calendar-today { min-height: 44px; padding: 0 16px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); color: var(--text); font: 600 15px var(--font-body); cursor: pointer; }
+.calendar-today:hover { border-color: var(--muted); }
+.calendar-month { padding-inline: 16px; margin: 14px 0 12px; font-size: 20px; font-weight: 600; }
+.calendar-week, .calendar-days { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); text-align: center; }
+.calendar-week { font-size: 13px; font-weight: 600; padding-bottom: 6px; }
+.calendar-week > :is(:first-child, :last-child), .calendar-days > button:is(:nth-child(7n), :nth-child(7n + 1)) { color: var(--muted); }
+.calendar-days > * { min-height: 54px; border: 0; border-top: 1px solid var(--line); }
+.calendar-days button { display: grid; grid-template-rows: 34px 4px; align-content: center; justify-items: center; gap: 2px; padding: 0; background: var(--clear); color: var(--text); font: 500 17px var(--font-body); font-variant-numeric: tabular-nums; cursor: pointer; }
+.calendar-days button > span { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; }
+.calendar-days button:hover > span { background: var(--surface); }
+.calendar-days button[aria-current=date]:not([aria-pressed=true]) > span { color: var(--focus); font-weight: 700; }
+.calendar-days button[aria-pressed=true] > span, .deal-number { background: var(--cyan); color: var(--button-ink); }
+.calendar-days i { width: calc(4px * var(--offer-count)); height: 4px; border-radius: 999px; background: var(--cyan); }
+.deal-detail { min-height: 80px; border-top: 1px solid var(--line); padding: 16px; }
+.calendar-selection { display: block; color: var(--muted); font-size: 13px; margin-bottom: 12px; }
+.deal-detail ol { margin: 0; padding: 0; list-style: none; }
+.deal-detail li + li { margin-top: 16px; }
+.deal-detail a { display: grid; grid-template-columns: 36px minmax(0, 1fr); align-items: start; gap: 12px; min-height: 44px; font-size: 16px; line-height: 1.4; font-weight: 500; }
+.deal-number { display: grid; place-items: center; border-radius: 50%; width: 36px; height: 36px; font-variant-numeric: tabular-nums; font-weight: 700; }
 .tools-section { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: 64px; }
 .tool-rows article { border-top: 1px solid var(--line); padding: 28px 0; }
 .tool-rows article:last-child { border-bottom: 1px solid var(--line); }
@@ -94,10 +97,7 @@
   .reader-strip { gap: 20px; }
   .reader-strip .text-link { grid-column: auto; }
   .reader-strip h2 { grid-row: auto; }
-  .calendar-visual { padding: 20px 12px; }
-  .calendar-heading h3 { font-size: 21px; }
-  .calendar-days>* { height: 48px; }
-  .deal-detail { gap: 12px; grid-template-columns: 64px 1fr; }
+  .calendar-days > * { min-height: 48px; }
   .home-closing { grid-template-columns: 48px 1fr; gap: 24px; }
   .home-closing>.app-icon { width: 48px !important; height: 48px !important; }
   .home-closing>.button { grid-column: 1 / -1; justify-self: start; }

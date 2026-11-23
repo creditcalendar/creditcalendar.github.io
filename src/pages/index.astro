@@ -33,13 +33,16 @@ const dealSource = 'https://www.doctorofcredit.com/deal-calendar-full-list-deals
       </div>
       <deal-calendar class="calendar-instrument">
         <div class="calendar-visual">
-          <HeroScene />
-          <div class="calendar-heading"><h3 data-month>Deal Calendar</h3></div>
-          <div class="calendar-week" aria-hidden="true">{['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => <span>{day}</span>)}</div>
+          <div class="calendar-heading">
+            <h3>Deal Calendar</h3>
+            <button type="button" class="calendar-today" data-today>Today</button>
+          </div>
+          <p class="calendar-month" data-month></p>
+          <div class="calendar-week" aria-hidden="true">{['S', 'M', 'T', 'W', 'T', 'F', 'S'].map(day => <span>{day}</span>)}</div>
           <div class="calendar-days" role="group" aria-label="Deal Calendar dates"></div>
         </div>
         <div class="deal-detail" aria-live="polite" aria-atomic="true">
-          <strong data-selected-date></strong>
+          <strong class="calendar-selection" data-selected-date></strong>
           <div data-offers>Loading offers…</div>
         </div>
         <noscript><p>Open the Doctor of Credit Deal Calendar to see offers.</p></noscript>
@@ -121,6 +124,12 @@ const dealSource = 'https://www.doctorofcredit.com/deal-calendar-full-list-deals
     connectedCallback() {
       this.controller = new AbortController();
       const { signal } = this.controller;
+      this.querySelector('[data-today]')!.addEventListener('click', () => {
+        const today = new Date();
+        this.currentDate = today.toDateString();
+        this.selectedDay = today.getDate();
+        this.render(today);
+      }, { signal });
       this.updateDate();
       this.timer = window.setInterval(() => this.updateDate(), 30_000);
       document.addEventListener('visibilitychange', () => this.updateDate(), { signal });
@@ -176,12 +185,15 @@ const dealSource = 'https://www.doctorofcredit.com/deal-calendar-full-list-deals
         const button = document.createElement('button');
         const count = this.deals?.[dateKey(year, month, day)]?.length ?? 0;
         button.type = 'button';
-        button.textContent = String(day);
+        const number = document.createElement('span');
+        number.textContent = String(day);
+        button.append(number);
         button.setAttribute('aria-label', `${monthLabel}, day ${day}${count ? `, ${count} ${count === 1 ? 'offer' : 'offers'}` : ''}`);
         if (day === today.getDate()) button.setAttribute('aria-current', 'date');
         if (count) {
           const mark = document.createElement('i');
           mark.setAttribute('aria-hidden', 'true');
+          mark.style.setProperty('--offer-count', String(Math.min(count, 8)));
           button.append(mark);
         }
         button.addEventListener('click', () => {
@@ -204,12 +216,18 @@ const dealSource = 'https://www.doctorofcredit.com/deal-calendar-full-list-deals
             this.deals === null ? 'Offers are unavailable right now.' : 'No offers are listed for this date.';
           return;
         }
-        const list = document.createElement('ul');
-        for (const offer of offers) {
+        const list = document.createElement('ol');
+        for (const [index, offer] of offers.entries()) {
           const item = document.createElement('li');
           const link = document.createElement('a');
           link.href = offer.url;
-          link.textContent = offer.title;
+          const badge = document.createElement('span');
+          badge.className = 'deal-number';
+          badge.setAttribute('aria-hidden', 'true');
+          badge.textContent = String(index + 1);
+          const title = document.createElement('span');
+          title.textContent = offer.title;
+          link.append(badge, title);
           item.append(link);
           list.append(item);
         }
