@@ -49,7 +49,7 @@ body:has(.home) > header .navigation { width: calc(min(100%, var(--home-max-widt
 .reader-strip .text-link { grid-column: 2; justify-self: start; text-decoration: underline; }
 .calendar-section { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: 64px; align-items: center; }
 .calendar-intro>p:not(.section-label) { color: var(--muted); max-width: 32ch; }
-.calendar-intro .demo-instruction { font-size: 13px; margin-top: 32px; }
+.calendar-instrument { display: block; }
 .calendar-visual { position: relative; isolation: isolate; padding: 28px; background: var(--surface); border: 1px solid var(--line); }
 .calendar-visual hero-scene { z-index: -1; opacity: .24; overflow: hidden; }
 .calendar-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 24px; }
@@ -62,13 +62,12 @@ body:has(.home) > header .navigation { width: calc(min(100%, var(--home-max-widt
 .calendar-days button[aria-pressed=true] { background: var(--cyan); color: var(--button-ink); }
 .calendar-days i { position: absolute; width: 4px; height: 4px; border-radius: 50%; background: var(--cyan); bottom: 9px; }
 .calendar-days button[aria-pressed=true] i { background: var(--button-ink); }
-.quiet-day { color: var(--muted); }
+.calendar-days button[aria-current=date] { font-weight: 700; text-decoration: underline; text-underline-offset: 4px; }
 .deal-detail { display: grid; grid-template-columns: 76px minmax(0, 1fr); gap: 20px; align-items: start; padding: 24px 0 8px; min-height: 162px; }
-.deal-date>span { display: block; }
-.deal-date strong { font-size: 21px; font-variant-numeric: tabular-nums; white-space: nowrap; letter-spacing: -.07em; }
-.deal-detail h3 { font-size: 17px; line-height: 1.4; font-weight: 500; margin: 8px 0; }
 .deal-detail p, .sample-note { font-size: 12px; color: var(--muted); margin: 0; }
-.sample-note { border-top: 1px solid var(--line); padding-top: 12px; }
+.deal-detail ul { margin: 0; padding-inline-start: 1.25em; }
+.deal-detail li + li { margin-top: 8px; }
+.deal-detail a { text-decoration: underline; }
 .tools-section { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: 64px; }
 .tool-rows article { border-top: 1px solid var(--line); padding: 28px 0; }
 .tool-rows article:last-child { border-bottom: 1px solid var(--line); }
@@ -103,7 +102,6 @@ body:has(.home) > header .navigation { width: calc(min(100%, var(--home-max-widt
   .calendar-heading h3 { font-size: 21px; }
   .calendar-days>* { height: 48px; }
   .deal-detail { gap: 12px; grid-template-columns: 64px 1fr; }
-  .deal-date strong { font-size: 20px; }
   .home-closing { grid-template-columns: 48px 1fr; gap: 24px; }
   .home-closing>.app-icon { width: 48px !important; height: 48px !important; }
   .home-closing>.button { grid-column: 1 / -1; justify-self: start; }

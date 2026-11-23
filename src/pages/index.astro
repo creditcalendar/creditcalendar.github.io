@@ -4,8 +4,7 @@ import HeroScene from '../components/HeroScene.astro';
 import AppIcon from '../components/AppIcon.astro';
 import AppPreview from '../components/AppPreview.astro';
 import '../styles/home.css';
-const days = Array.from({length: 30}, (_, i) => i + 1);
-const marked = [7, 12, 18, 24, 27];
+const dealSource = 'https://www.doctorofcredit.com/deal-calendar-full-list-deals-credit-card-bank-bonuses-expiry-dates/';
 ---
 <Layout title="Doctor of Credit for iPhone & iPad — Credit Calendar">
   <div class="home">
@@ -27,15 +26,24 @@ const marked = [7, 12, 18, 24, 27];
     <section class="reader-strip home-section" id="reader"><h2>Doctor of Credit,<br />where you read.</h2><p>Credit Calendar is an independent reader. Browse posts by category, search for an offer, or return to a saved article.</p><a class="text-link" href="/feed/">Visit the website feed </a></section>
 
     <section class="calendar-section home-section" id="calendar">
-      <div class="calendar-intro"><h2>See when<br />offers end.</h2><p>Browse offers by date in the Deal Calendar.</p><p class="demo-instruction">Try a marked date </p></div>
-      <div class="calendar-instrument">
-        <div class="calendar-visual"><HeroScene /><div class="calendar-heading"><h3>November <span>2026</span></h3><span class="section-label">Sample month</span></div>
-        <div class="calendar-week" aria-hidden="true">{['S','M','T','W','T','F','S'].map(day => <span>{day}</span>)}</div>
-        <div class="calendar-days" role="group" aria-label="Sample November 2026 deal dates">{days.map(day => marked.includes(day) ? <button type="button" data-day={day} aria-label={`November ${day}, sample deals`} aria-pressed={day === 7}><span>{day}</span><i aria-hidden="true"></i></button> : <span class="quiet-day">{day}</span>)}</div>
-        </div>
-        <div class="deal-detail" aria-live="polite" aria-atomic="true"><div class="deal-date"><span class="section-label">Selected date</span><strong id="selected-date">Nov 07</strong></div><div><h3 id="selected-deal">Explore a checking account bonus</h3><p id="selected-description">Review the offer and its qualifying requirements.</p></div></div>
-        <p class="sample-note">Interactive preview. Sample offers, not current promotions.</p>
+      <div class="calendar-intro">
+        <h2>See when<br />offers end.</h2>
+        <p>Browse this month’s offers by listed expiration date.</p>
+        <a class="text-link" href={dealSource}>Doctor of Credit Deal Calendar</a>
       </div>
+      <deal-calendar class="calendar-instrument">
+        <div class="calendar-visual">
+          <HeroScene />
+          <div class="calendar-heading"><h3 data-month>Deal Calendar</h3></div>
+          <div class="calendar-week" aria-hidden="true">{['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => <span>{day}</span>)}</div>
+          <div class="calendar-days" role="group" aria-label="Deal Calendar dates"></div>
+        </div>
+        <div class="deal-detail" aria-live="polite" aria-atomic="true">
+          <strong data-selected-date></strong>
+          <div data-offers>Loading offers…</div>
+        </div>
+        <noscript><p>Open the Doctor of Credit Deal Calendar to see offers.</p></noscript>
+      </deal-calendar>
     </section>
 
     <section class="home-section tools-section" id="features"><div><h2>From finding<br />to saving.</h2></div><div class="tool-rows">
@@ -47,20 +55,168 @@ const marked = [7, 12, 18, 24, 27];
   </div>
 </Layout>
 <script>
-  const samples: Record<string, [string, string]> = {
-    '7': ['Explore a checking account bonus', 'Review the offer and its qualifying requirements.'],
-    '12': ['Activate an eligible rewards offer', 'Check the activation steps before making a purchase.'],
-    '18': ['Take a closer look at a gift card offer', 'Read the terms and check which retailers qualify.'],
-    '24': ['Compare payment options for an order', 'Review the available offers before you check out.'],
-    '27': ['Revisit an offer before it ends', 'Check the deadline and any remaining requirements.'],
-  };
-  document.querySelectorAll<HTMLButtonElement>('[data-day]').forEach(button => {
-    button.addEventListener('click', () => {
-      const day = button.dataset.day!;
-      document.querySelectorAll('[data-day]').forEach(item => item.setAttribute('aria-pressed', String(item === button)));
-      document.getElementById('selected-date')!.textContent = `Nov ${day.padStart(2, '0')}`;
-      document.getElementById('selected-deal')!.textContent = samples[day][0];
-      document.getElementById('selected-description')!.textContent = samples[day][1];
-    });
-  });
+  type Offer = { title: string; url: string };
+  type OffersByDate = Record<string, Offer[]>;
+
+  const sourceOrigin = 'https://www.doctorofcredit.com';
+  const calendarAPI = new URL('/wp-json/wp/v2/posts', sourceOrigin);
+  calendarAPI.search = new URLSearchParams({
+    slug: 'deal-calendar-full-list-deals-credit-card-bank-bonuses-expiry-dates',
+    _fields: 'content',
+  }).toString();
+
+  const monthNames = Array.from({ length: 12 }, (_, month) =>
+    new Date(2000, month, 1).toLocaleDateString('en-US', { month: 'long' }),
+  );
+  const dateKey = (year: number, month: number, day: number) =>
+    [year, month + 1, day].map(part => String(part).padStart(2, '0')).join('-');
+
+  function parseOffers(html: string): OffersByDate {
+    // The template keeps upstream markup inert. Only link text and HTTP(S) URLs are rendered.
+    const article = document.createElement('template');
+    article.innerHTML = html;
+    const offers: OffersByDate = {};
+    let year = 0;
+    let month = -1;
+    let day = 0;
+    for (const section of article.content.children) {
+      const text = section.textContent.trim();
+      if (section.tagName === 'H2') {
+        const heading = /^([A-Za-z]+)\s*\((\d{4})\)$/.exec(text);
+        year = heading ? Number(heading[2]) : 0;
+        month = heading ? monthNames.indexOf(heading[1]) : -1;
+        day = 0;
+      } else if (section.tagName === 'P') {
+        day = Number(/^(\d{1,2})(?:st|nd|rd|th)$/.exec(text)?.[1] ?? 0);
+      } else if (section.tagName === 'UL' && year && month >= 0 && day) {
+        const validDay = day <= new Date(year, month + 1, 0).getDate();
+        const key = dateKey(year, month, day);
+        day = 0;
+        if (!validDay) continue;
+        const entries = offers[key] ?? [];
+        for (const link of section.querySelectorAll(':scope > li > a[href]')) {
+          const href = link.getAttribute('href')!.trim();
+          const title = link.textContent.replace(/\s+/g, ' ').trim();
+          if (!href || !title) continue;
+          let url: URL;
+          try { url = new URL(href, sourceOrigin); } catch { continue; }
+          if (['http:', 'https:'].includes(url.protocol) && !entries.some(offer => offer.url === url.href)) {
+            entries.push({ title, url: url.href });
+          }
+        }
+        if (entries.length) offers[key] = entries;
+      }
+    }
+    if (!Object.keys(offers).length) throw new Error('No dated offers found');
+    return offers;
+  }
+
+  class DealCalendar extends HTMLElement {
+    private deals: OffersByDate | null | undefined;
+    private timer?: number;
+    private controller?: AbortController;
+    private currentDate = '';
+    private selectedDay = 0;
+
+    connectedCallback() {
+      this.controller = new AbortController();
+      const { signal } = this.controller;
+      this.updateDate();
+      this.timer = window.setInterval(() => this.updateDate(), 30_000);
+      document.addEventListener('visibilitychange', () => this.updateDate(), { signal });
+      void this.load(signal);
+    }
+
+    disconnectedCallback() {
+      this.controller?.abort();
+      window.clearInterval(this.timer);
+    }
+
+    private async load(signal: AbortSignal) {
+      try {
+        const response = await fetch(calendarAPI, { signal, cache: 'no-store' });
+        if (!response.ok) throw new Error('Calendar data unavailable');
+        const posts = await response.json();
+        const html = posts[0]?.content?.rendered;
+        if (typeof html !== 'string') throw new Error('Calendar article unavailable');
+        if (signal.aborted) return;
+        this.deals = parseOffers(html);
+      } catch {
+        if (signal.aborted) return;
+        this.deals = null;
+      }
+      if (!signal.aborted) this.render(new Date());
+    }
+
+    private updateDate() {
+      const today = new Date();
+      const date = today.toDateString();
+      if (date === this.currentDate) return;
+      this.currentDate = date;
+      this.selectedDay = today.getDate();
+      this.render(today);
+    }
+
+    private render(today: Date) {
+      const year = today.getFullYear();
+      const month = today.getMonth();
+      const monthLabel = today.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+      const days = this.querySelector('.calendar-days')!;
+      this.querySelector('[data-month]')!.textContent = monthLabel;
+      days.setAttribute('aria-label', `Deal Calendar for ${monthLabel}`);
+      days.replaceChildren();
+
+      const firstWeekday = new Date(year, month, 1).getDay();
+      for (let i = 0; i < firstWeekday; i++) {
+        const space = document.createElement('span');
+        space.setAttribute('aria-hidden', 'true');
+        days.append(space);
+      }
+      for (let day = 1; day <= new Date(year, month + 1, 0).getDate(); day++) {
+        const button = document.createElement('button');
+        const count = this.deals?.[dateKey(year, month, day)]?.length ?? 0;
+        button.type = 'button';
+        button.textContent = String(day);
+        button.setAttribute('aria-label', `${monthLabel}, day ${day}${count ? `, ${count} ${count === 1 ? 'offer' : 'offers'}` : ''}`);
+        if (day === today.getDate()) button.setAttribute('aria-current', 'date');
+        if (count) {
+          const mark = document.createElement('i');
+          mark.setAttribute('aria-hidden', 'true');
+          button.append(mark);
+        }
+        button.addEventListener('click', () => {
+          this.selectedDay = day;
+          selectDay();
+        });
+        days.append(button);
+      }
+
+      const selectDay = () => {
+        days.querySelectorAll('button').forEach((button, index) => {
+          button.setAttribute('aria-pressed', String(index + 1 === this.selectedDay));
+        });
+        this.querySelector('[data-selected-date]')!.textContent =
+          new Date(year, month, this.selectedDay).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        const details = this.querySelector('[data-offers]')!;
+        const offers = this.deals?.[dateKey(year, month, this.selectedDay)];
+        if (!offers?.length) {
+          details.textContent = this.deals === undefined ? 'Loading offers…' :
+            this.deals === null ? 'Offers are unavailable right now.' : 'No offers are listed for this date.';
+          return;
+        }
+        const list = document.createElement('ul');
+        for (const offer of offers) {
+          const item = document.createElement('li');
+          const link = document.createElement('a');
+          link.href = offer.url;
+          link.textContent = offer.title;
+          item.append(link);
+          list.append(item);
+        }
+        details.replaceChildren(list);
+      };
+      selectDay();
+    }
+  }
+  customElements.define('deal-calendar', DealCalendar);
 </script>
