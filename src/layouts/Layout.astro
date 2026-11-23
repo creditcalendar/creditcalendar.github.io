@@ -1,6 +1,6 @@
 ---
 import '../styles/site.css';
-import AppIcon from '../components/AppIcon.astro';
+import NavigationGlass from '../components/NavigationGlass.astro';
 interface Props { title: string; description?: string; article?: boolean; }
 const { title, description = 'Discover deals, keep track of important dates, and organize your credit cards with Credit Calendar for iPhone and iPad.', article = false } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site);
@@ -32,10 +32,11 @@ const isCurrent = (path: string) => path === '/' ? Astro.url.pathname === '/' : 
     <link rel="alternate" type="application/rss+xml" title="Credit Calendar updates" href="/feed.xml" />
   </head>
   <body>
+    <NavigationGlass />
     <a class="skip" href="#main">Skip to content</a>
     <header>
       <div class="navigation">
-        <a class="brand" href="/"><AppIcon />Credit Calendar</a>
+        <a class="brand" href="/"><picture class="app-icon" style="width:44px;height:44px"><source srcset="/assets/images/brand-dark.png" media="(prefers-color-scheme: dark)" /><img src="/assets/images/brand-light.png" width="44" height="44" alt="" /></picture>Credit Calendar</a>
         <nav aria-label="Main navigation">
           {navigation.map(([href, label]) => <a href={href} aria-current={isCurrent(href) ? 'page' : undefined}>{label}</a>)}
         </nav>

@@ -19,11 +19,16 @@
   --button-ink: #000;
   --focus: #00769f;
   --clear: transparent;
+  --glass-fill: rgb(255 255 255 / .28);
+  --glass-edge: rgb(255 255 255 / .8);
+  --glass-highlight: rgb(255 255 255 / .9);
+  --glass-shadow: rgb(0 0 0 / .08);
+  --glass-hover: rgb(255 255 255 / .18);
   --container: 1100px;
   font-family: var(--font-body);
 }
 @media (prefers-color-scheme: dark) {
-  :root { --bg: #000; --surface: #1c1c1e; --text: #f7f6f2; --muted: #aeaeb2; --line: #38383a; --focus: var(--cyan); }
+  :root { --bg: #000; --surface: #1c1c1e; --text: #f7f6f2; --muted: #aeaeb2; --line: #38383a; --focus: var(--cyan); --glass-fill: rgb(28 28 30 / .30); --glass-edge: rgb(255 255 255 / .16); --glass-highlight: rgb(255 255 255 / .23); --glass-shadow: rgb(0 0 0 / .3); --glass-hover: rgb(255 255 255 / .08); }
 }
 * { box-sizing: border-box; }
 html, body { overflow-x: clip; }
@@ -37,14 +42,36 @@ button, a { -webkit-tap-highlight-color: var(--clear); }
 a:active { opacity: .75; }
 .skip { position: fixed; top: -80px; left: 20px; z-index: 10; background: var(--neon); color: var(--button-ink); padding: 12px; }
 .skip:focus { top: 12px; }
-header { position: sticky; top: 0; z-index: 5; background: color-mix(in srgb, var(--bg) 94%, var(--clear)); border-bottom: 1px solid var(--line); backdrop-filter: blur(20px); }
-.navigation { max-width: var(--container); padding: 16px 32px; margin: auto; display: flex; align-items: center; gap: 24px; }
+header { position: sticky; top: 6px; z-index: 5; padding: 0 16px; margin-top: 6px; pointer-events: none; }
+/* Keep the backdrop on the capsule so content remains visible around its edges. */
+header .navigation {
+  position: relative;
+  pointer-events: auto;
+  border: 1px solid var(--glass-edge);
+  border-radius: 999px;
+  background: var(--surface);
+  box-shadow: inset 0 1px 0 var(--glass-highlight), inset 0 -1px 0 var(--glass-edge), 0 8px 28px var(--glass-shadow);
+}
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  header .navigation {
+    background: linear-gradient(160deg, var(--glass-hover), var(--clear) 45%), var(--glass-fill);
+    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    backdrop-filter: blur(20px) saturate(160%);
+  }
+}
+header nav a { border-radius: 24px; padding: 10px 12px; transition: background-color .18s; }
+header nav a:hover { background: var(--glass-hover); text-decoration: none; }
+header nav a[aria-current] { background: var(--clear); }
+header .brand:hover { text-decoration: none; }
+header nav { gap: 4px; }
+.navigation { max-width: none; padding: 4px 8px 4px 24px; margin: auto; display: flex; align-items: center; gap: 24px; }
 .brand { display: flex; align-items: center; gap: 12px; font-weight: 650; font-size: 18px; letter-spacing: -.4px; white-space: nowrap; }
 .brand img { border-radius: 8px; }
 nav { display: flex; gap: 24px; margin-left: auto; font-size: 14px; color: var(--muted); }
 nav a { padding: 8px 0; white-space: nowrap; }
 nav a[aria-current] { color: var(--text); text-decoration: underline; text-decoration-color: var(--accent); text-decoration-thickness: 2px; text-underline-offset: 8px; }
 .nav-download, .button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; border-radius: 28px; padding: 12px 24px; font-size: 14px; font-weight: 600; white-space: nowrap; transition: opacity .15s; }
+header .nav-download { padding: 8px 24px; }
 .nav-download, .primary { background: var(--neon); color: var(--button-ink); border: 1px solid var(--neon); }
 .nav-download:hover, .primary:hover { color: var(--button-ink); text-decoration: none; opacity: .85; }
 .secondary { border: 1px solid var(--line); background: var(--surface); color: var(--text); }
@@ -119,7 +146,9 @@ footer p { color: var(--muted); font-size: 13px; margin: 8px 0 0; }
 .app-icon { display: inline-block; flex-shrink: 0; vertical-align: middle; }
 .app-icon img { display: block; width: 100%; height: 100%; }
 @media (max-width: 850px) {
-  .navigation { flex-wrap: wrap; gap: 12px; padding: 12px 24px; }
+  header { top: 6px; padding: 0 12px; margin-top: 6px; }
+  header .navigation { border-radius: 32px; }
+  .navigation { flex-wrap: wrap; gap: 4px 12px; padding: 4px 12px; }
   .brand { font-size: 16px; }
   nav { order: 3; justify-content: center; width: 100%; gap: 28px; }
   .nav-download { margin-left: auto; }
@@ -143,12 +172,36 @@ footer p { color: var(--muted); font-size: 13px; margin: 8px 0 0; }
   .navigation { padding-left: 16px; padding-right: 16px; gap: 8px; }
   .brand { font-size: 14px; gap: 8px; }
   nav { gap: 20px; font-size: 13px; }
-  .nav-download { padding: 8px 12px; font-size: 12px; }
+  header nav { gap: 0; justify-content: space-between; }
+  header nav a { padding: 10px 6px; font-size: 12px; }
+  header .navigation { padding: 4px 10px; gap: 4px 8px; }
+  header .brand { gap: 6px; font-size: 13px; }
+  header .nav-download { padding: 8px 12px; font-size: 12px; }
   .info-panel { padding: 24px; }
   .inner h1 { font-size: 40px; }
   footer { padding: 32px 24px; }
 }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  .button, .nav-download { transition: none; }
+  .button, .nav-download, header nav a { transition: none; }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  header .navigation { background: var(--surface); -webkit-backdrop-filter: none; backdrop-filter: none; }
+}
+@media (prefers-contrast: more) {
+  header .navigation { background: var(--surface); border-color: var(--text); -webkit-backdrop-filter: none; backdrop-filter: none; }
+}
+
+/* Apply the filter directly to the backdrop, never to the navigation content. */
+.glass-definitions { position: absolute; pointer-events: none; }
+@supports (backdrop-filter: url("#navigation-refraction")) {
+  header .navigation.has-refraction {
+    background: linear-gradient(160deg, var(--glass-hover), var(--clear) 45%), color-mix(in srgb, var(--glass-fill) 85%, transparent);
+    -webkit-backdrop-filter: url("#navigation-refraction") saturate(135%) blur(2px);
+    backdrop-filter: url("#navigation-refraction") saturate(135%) blur(2px);
+  }
+}
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+  header .navigation.has-refraction { background: var(--surface); -webkit-backdrop-filter: none; backdrop-filter: none; }
 }
