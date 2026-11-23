@@ -16,11 +16,11 @@
   --ocean-blue: #89bbc2;
   --light-accent: #2d7f1a;
   --bg: #f7f6f2;
-  --surface: #fffefb;
-  --text: #191d18;
-  --muted: #60645c;
+  --surface: #fff;
+  --text: #1c1c1e;
+  --muted: #636366;
   --accent: var(--light-accent);
-  --line: #dcded3;
+  --line: #dededc;
 }
 header { background: color-mix(in srgb, var(--bg) 90%, transparent); }
 nav a[aria-current] { color: var(--text); }
@@ -75,7 +75,7 @@ hero-scene canvas { display: block; width: 100%; height: 100%; }
 #search-status { color: var(--muted); margin-top: 14px; }
 [hidden] { display: none !important; }
 @media (prefers-color-scheme: dark) {
-  :root { --bg: #000; --surface: #1c1c1e; --text: #f7f6f2; --muted: #b3b6ac; --accent: var(--neon); --line: #34372f; }
+  :root { --bg: #000; --surface: #1c1c1e; --text: #f7f6f2; --muted: #aeaeb2; --accent: var(--neon); --line: #38383a; }
   .brand-dot { color: var(--neon); }
   .hero { background: radial-gradient(ellipse at 50% 70%, #7dd02018, transparent 52%), var(--bg); }
   .feature.wide:not(.orange) { background: #182729; }
@@ -92,3 +92,17 @@ hero-scene canvas { display: block; width: 100%; height: 100%; }
 
 .app-icon { display: inline-block; flex-shrink: 0; vertical-align: middle; }
 .app-icon img { display: block; width: 100%; height: 100%; }
+
+/* Grouped page backgrounds match the iOS app. */
+.hero { background: var(--bg); }
+.hero h1 span { text-decoration: none; }
+.primary { background: var(--text); color: var(--bg); box-shadow: none; }
+.primary:hover { background: var(--text); color: var(--bg); opacity: .85; }
+.feature, .feature.wide:not(.orange), .feature.orange { background: var(--surface); }
+.showcase { height: auto; min-height: 560px; padding: 12px 0 28px; align-items: center; }
+.feature { display: flex; flex-direction: column; overflow: hidden; }
+.feature > p:not(.eyebrow) { min-height: 88px; }
+@media (max-width: 580px) {
+  .showcase { min-height: 0; margin-top: 36px; }
+  .feature > p:not(.eyebrow) { min-height: 0; }
+}

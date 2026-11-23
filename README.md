@@ -52,7 +52,7 @@ Do not edit generated `dist/` or `.astro/` files.
 - `src/content.config.ts`: validated article metadata.
 - `public/`: files copied unchanged, including `app-ads.txt`, app icon and favicons.
 
-The homepage phone is an illustration, not an actual app screenshot.
+The homepage phone preview is rendered with HTML, CSS, and inline SVG in `AppPreview.astro`, based on the app feed. It stays light in both system appearances; feature descriptions do not use screenshots.
 The colors reference https://whatsub.equal2.app/ and the Credit Calendar app;
 no reference-site artwork or source code is reused.
 
