@@ -98,7 +98,7 @@ function createAtmosphere(pixelRatio: number) {
     const centerX = (bank - 8) * .72;
     const centerY = .08 + .32 * Math.sin(bank * 1.12);
     const centerZ = -5.4 - (bank % 4) * 1.7;
-    for (let i = 0; i < 520; i++) {
+    for (let i = 0; i < 2600; i++) {
       const x = Math.random() * 2 - 1;
       const y = Math.random() * 2 - 1;
       const z = Math.random() * 2 - 1;
@@ -135,14 +135,14 @@ function createAtmosphere(pixelRatio: number) {
         float sky = mix(.18 + seed * .47, (.34 + seed * .58) * pulse, dust);
         float terrain = (.32 + glow * .62) * (1.0 - smoothstep(3.8, 7.4, abs(p.x)));
         opacity = mix(sky * sqrt(distanceFade), terrain * distanceFade, ground);
-        opacity = mix(opacity, (.025 + seed * .052) * distanceFade, cloud);
+        opacity = mix(opacity, (.13 + seed * .28) * sqrt(distanceFade), cloud);
         highlight = ground * glow * .48;
-        softness = max(nearBlur, cloud * .85);
+        softness = max(nearBlur, cloud * .18);
         gl_Position = projectionMatrix * view;
         float skySize = clamp((8.0 + seed * 17.0) / depth, 1.15, 3.8) + nearBlur * 9.0;
         float terrainSize = clamp(4.2 / depth, .68, 1.3);
         float pointSize = mix(skySize, terrainSize, ground);
-        pointSize = mix(pointSize, 9.0 + seed * 12.0, cloud);
+        pointSize = mix(pointSize, 1.05 + seed * 1.35, cloud);
         gl_PointSize = pixelRatio * pointSize;
       }`,
     fragmentShader: `
@@ -267,9 +267,9 @@ export function createHeroScene(host: HTMLElement): () => void {
     elapsed += delta;
     material.uniforms.time.value = screen ? elapsed : time * .001;
     if (screen && atmosphere) {
-      const ease = 1 - Math.exp(-delta * 5);
-      const yaw = trackingPointer ? -pointerX * .72 : Math.sin(elapsed * .48) * .44;
-      const pitch = trackingPointer ? pointerY * .20 : Math.sin(elapsed * .31) * .06;
+      const ease = 1 - Math.exp(-delta * (trackingPointer ? 5 : 1.7));
+      const yaw = trackingPointer ? -pointerX * .72 : Math.sin(elapsed * .19) * .16;
+      const pitch = trackingPointer ? pointerY * .20 : Math.sin(elapsed * .14) * .025;
       const stageRotation = atmosphere.scene.rotation;
       stageRotation.y += (yaw - stageRotation.y) * ease;
       stageRotation.x += (pitch * .55 - stageRotation.x) * ease;
