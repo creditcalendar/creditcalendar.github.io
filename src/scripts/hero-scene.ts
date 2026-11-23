@@ -7,25 +7,30 @@ function phoneParticles() {
   const halfHeight = 2048 / 944 / 2 + .05;
   const radius = .17;
   const thickness = .14;
+  const depthSegments = 14;
+  const sideSegments = 264;
+  const endSegments = 104;
+  const cornerSegments = 38;
 
   // Sample straight edges and quarter-circle corners at a consistent spacing.
-  for (let layer = 0; layer <= 8; layer++) {
-    const z = -thickness * layer / 8;
-    const bevel = .016 * Math.abs(layer / 4 - 1) ** 3;
+  for (let layer = 0; layer <= depthSegments; layer++) {
+    const depth = layer / depthSegments;
+    const z = -thickness * depth;
+    const bevel = .016 * Math.abs(depth * 2 - 1) ** 3;
     const width = halfWidth - bevel;
     const height = halfHeight - bevel;
     for (const side of [-1, 1]) {
-      for (let i = 0; i <= 132; i++) {
-        const y = (2 * i / 132 - 1) * (height - radius);
+      for (let i = 0; i <= sideSegments; i++) {
+        const y = (2 * i / sideSegments - 1) * (height - radius);
         positions.push(side * width, y, z);
       }
-      for (let i = 0; i <= 52; i++) {
-        const x = (2 * i / 52 - 1) * (width - radius);
+      for (let i = 0; i <= endSegments; i++) {
+        const x = (2 * i / endSegments - 1) * (width - radius);
         positions.push(x, side * height, z);
       }
       for (const end of [-1, 1]) {
-        for (let i = 1; i < 19; i++) {
-          const angle = i / 19 * Math.PI / 2;
+        for (let i = 1; i < cornerSegments; i++) {
+          const angle = i / cornerSegments * Math.PI / 2;
           positions.push(side * (width - radius + radius * Math.cos(angle)),
             end * (height - radius + radius * Math.sin(angle)), z);
         }
@@ -37,9 +42,10 @@ function phoneParticles() {
   for (const [side, center, length] of [
     [-1, .67, .08], [-1, .45, .16], [-1, .23, .16], [1, .40, .24], [1, -.51, .19],
   ]) {
-    for (let row = 0; row < 4; row++) {
-      for (let i = 0; i <= 16; i++) {
-        positions.push(side * (halfWidth + .014), center + (i / 16 - .5) * length, -.035 - row * .02);
+    const buttonSegments = Math.ceil(length * 150);
+    for (let row = 0; row <= 6; row++) {
+      for (let i = 0; i <= buttonSegments; i++) {
+        positions.push(side * (halfWidth + .014), center + (i / buttonSegments - .5) * length, -.035 - row * .01);
       }
     }
   }
@@ -87,9 +93,9 @@ export function createHeroScene(host: HTMLElement): () => void {
         float band = (diagonal - sweep) * 7.0;
         intensity = exp(-band * band);
         float grain = fract(sin(dot(position, vec3(419.2, 317.9, 127.1))) * 4375.93);
-        vec3 jitter = vec3(grain - .5, fract(grain * 97.7) - .5, fract(grain * 47.9) - .5) * .009;
+        vec3 jitter = vec3(grain - .5, fract(grain * 97.7) - .5, fract(grain * 47.9) - .5) * .005;
         gl_Position = projectionMatrix * modelViewMatrix * vec4(position + jitter, 1.0);
-        gl_PointSize = (1.1 + grain * 1.1 + intensity * 1.5) * pixelRatio;
+        gl_PointSize = (.72 + grain * .48 + intensity * .5) * pixelRatio;
       #else
         float sweep = mod(time * 1.4, 14.0) - 7.0;
         intensity = exp(-pow((position.x - sweep) * 1.4, 2.0));
