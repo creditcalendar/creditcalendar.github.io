@@ -149,7 +149,7 @@ export function createHeroScene(host: HTMLElement): () => void {
     if (screen) {
       const ease = 1 - Math.exp(-delta * 5);
       const yaw = trackingPointer ? -pointerX * .72 : Math.sin(elapsed * .48) * .44;
-      const pitch = trackingPointer ? -pointerY * .27 : Math.sin(elapsed * .31) * .09;
+      const pitch = trackingPointer ? pointerY * .27 : Math.sin(elapsed * .31) * .09;
       points.rotation.y += (yaw - points.rotation.y) * ease;
       points.rotation.x += (pitch - points.rotation.x) * ease;
       // Match the orthographic projection. CSS uses a downward-positive Y axis.
