@@ -32,7 +32,7 @@ const isCurrent = (path: string) => path === '/' ? Astro.url.pathname === '/' : 
     <a class="skip" href="#main">Skip to content</a>
     <header>
       <div class="navigation">
-        <a class="brand" href="/"><AppIcon />Credit Calendar<span class="brand-dot" aria-hidden="true">✦</span></a>
+        <a class="brand" href="/"><AppIcon />Credit Calendar</a>
         <nav aria-label="Main navigation">
           {navigation.map(([href, label]) => <a href={href} aria-current={isCurrent(href) ? 'page' : undefined}>{label}</a>)}
         </nav>
