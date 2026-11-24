@@ -7,9 +7,10 @@ const icons = {
   library: 'M5 8h14v13H5z M7 5h10 M9 2h6',
 };
 const tabs = ['Feed', 'Search', 'Calendar', 'Savings', 'Library'] as const;
+const bankAccounts = { label: 'Bank Accounts', path: 'M12 2 2 8v2h20V8L12 2ZM4 11h3v8H4zm6.5 0h3v8h-3zm6.5 0h3v8h-3zM2 20h20v2H2z' };
 const quickLinks = [
   { label: 'Credit Cards', path: 'M4 4h16a2 2 0 0 1 2 2v2H2V6a2 2 0 0 1 2-2Zm-2 6h20v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-8Zm4 4v3h5v-3H6Z' },
-  { label: 'Bank Accounts', path: 'M12 2 2 8v2h20V8L12 2ZM4 11h3v8H4zm6.5 0h3v8h-3zm6.5 0h3v8h-3zM2 20h20v2H2z' },
+  bankAccounts,
   { label: 'Credit Scores', path: 'M3 13h4a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1v-6a1 1 0 0 1 1-1Zm7-5h4a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1Zm7-5h4a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z' },
 ];
 
@@ -28,7 +29,10 @@ const quickLinks = [
       <div class="bank-header"><strong><i>▥</i> POPULAR<small>®</small></strong><span>Personal &nbsp; Business &nbsp; Private Client</span></div>
       <div class="bank-menu">Banking⌄ &nbsp; Financing⌄ &nbsp; Treasury⌄</div>
       <div class="bank-banner"><div>Earn a $600 cash<br>bonus for your<br>business.<p>Make the switch to Popular Bank and earn a $600 cash bonus when you complete qualifying activities.<sup>1</sup></p><span>Connect with us</span></div></div>
-      <div class="offer-category">▥ Bank Accounts</div>
+      <div class="offer-category">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d={bankAccounts.path} fill-rule="evenodd" /></svg>
+        {bankAccounts.label}
+      </div>
       <div class="offer-copy"><h3>[FL, NJ, NY] Popular Bank $600 Business Checking Bonus</h3><p>Popular Bank is offering a $400 business bonus when you open a business checking account and complete the following requirements</p><small>November 7, 2026, 17:10 · William Charles<br>▢ 16 Comments</small></div>
     </div>
     <div class="next-offer">Get $1,000 of free<br>stock.</div>
@@ -40,7 +44,9 @@ const quickLinks = [
 .app-preview{--text:#000;position:relative;z-index:1;width:min(100%,320px);aspect-ratio:944/2048;container-type:inline-size;overflow:hidden;border:1px solid #d8d8da;border-radius:34px;background:#f7f6f2;color:#000;box-shadow:0 24px 60px #0002;text-align:left;color-scheme:light;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
 .preview-ui{font-size:3.5cqw;line-height:1.3;padding:0 4.5cqw}.status{height:14cqw;display:flex;align-items:center;justify-content:space-between;padding:0 10cqw;font-size:4.3cqw}.status-symbols{display:flex;gap:1.8cqw;align-items:center}.signal{color:#b9b9b7;font-size:3cqw}.status svg{width:5cqw;height:4cqw;fill:none;stroke:#000;stroke-width:3;stroke-linecap:round}.status i{display:block;width:6.6cqw;height:3.3cqw;background:#000;border-radius:1cqw;box-shadow:1cqw 0 0 -.3cqw #000}.feed-heading{display:flex;justify-content:space-between;align-items:flex-start;font-weight:750;font-size:7.3cqw;line-height:1.25;letter-spacing:-.16cqw}.feed-heading>div>span{color:#89898b}.popular{font-size:3.7cqw;letter-spacing:-.1cqw;font-weight:550;background:#39ff14;border-radius:10cqw;padding:2.7cqw 3.5cqw;white-space:nowrap}.categories{display:flex;gap:1.7cqw;white-space:nowrap;margin:5.5cqw 0; width:110cqw}.categories>span{background:#fff;border-radius:8cqw;padding:1.7cqw 3cqw;font-weight:650;font-size:3.3cqw}.feed-date{font-size:4.8cqw;font-weight:750;margin:0 0 5cqw;letter-spacing:-.1cqw}.offer{background:#fff;border-radius:4cqw;overflow:hidden}.bank-header{display:flex;gap:4cqw;align-items:center;padding:1cqw 3.4cqw;border-bottom:1px solid #eee;white-space:nowrap}.bank-header strong{font-family:Georgia,serif;color:#080b53;font-size:3.3cqw}.bank-header i{background:#df1035;color:#fff;font-style:normal}.bank-header small{font-size:1cqw}.bank-header>span{font-size:1.7cqw;color:#5288ad}.bank-menu{font-size:2cqw;color:#5680a3;padding:2cqw 3.4cqw}.bank-banner{padding:6.7cqw 8cqw 2cqw 2cqw;background:linear-gradient(140deg,#00144e,#004a87 70%,#00a8cc);min-height:54cqw}.bank-banner>div{background:#0d3976;padding:3.5cqw 4.5cqw;font-size:5.2cqw;line-height:1.05;font-weight:300;color:white;letter-spacing:-.15cqw}.bank-banner p{font-size:2.7cqw;line-height:1.4;letter-spacing:-.07cqw;margin:1.6cqw 0 4cqw}.bank-banner span{display:inline-block;background:#257fc1;border-radius:8cqw;padding:1.3cqw 1.8cqw;font-size:2cqw;letter-spacing:0}.offer-category{background:linear-gradient(100deg,#ededf2,#91b7c8);color:#00b9d8;font-size:3.4cqw;font-weight:700;padding:1.8cqw 4cqw}.offer-copy{padding:3.5cqw 3.7cqw}.offer-copy h3{font-size:4.7cqw;line-height:1.3;letter-spacing:-.15cqw;margin:0 0 2cqw;font-weight:750}.offer-copy p{font-size:3.6cqw;line-height:1.4;color:#858587;margin:0 0 3.7cqw}.offer-copy small{font-size:2.7cqw;line-height:1.5;color:#bcbcbf}.next-offer{background:#fff;border-radius:4cqw;margin-top:2.8cqw;padding:6cqw 12cqw;font:4.8cqw Georgia,serif;min-height:30cqw}.tab-bar{position:absolute;bottom:4.5cqw;left:4.5cqw;right:4.5cqw;display:flex;border:1px solid #c7c7cd;border-radius:9cqw;background:#fafafae8;backdrop-filter:blur(16px);padding:.8cqw;box-shadow:0 0 0 .5cqw #ffffff90}.tab{width:20%;display:flex;flex-direction:column;align-items:center;gap:.6cqw;padding:1.6cqw 0;border-radius:8cqw;font-size:2.3cqw;font-weight:550}.tab svg{width:5.5cqw;height:5.5cqw;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}.tab.active{color:#00b4d0;background:#e4e4e4}.gesture-bar{position:absolute;bottom:1.3cqw;left:36%;width:28%;height:.9cqw;background:#000;border-radius:1cqw}
 .categories > span { display: inline-flex; align-items: center; gap: 1.25cqw; }
-.categories svg { width: 4cqw; height: 4cqw; flex: none; fill: currentColor; opacity: .65; }
+.categories svg, .offer-category svg { width: 4cqw; height: 4cqw; flex: none; fill: currentColor; }
+.categories svg { opacity: .65; }
+.offer-category { display: flex; align-items: center; gap: 1.25cqw; }
 @media (prefers-color-scheme: dark) {
   .app-preview {
     --text: #fff;
