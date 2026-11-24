@@ -5,9 +5,13 @@
 /* Hallmark · waive 7b · user-specified app palette in :root · Credit Calendar must keep its black background and black text on neon download buttons. */
 /* Hallmark · dismissed 25 · Feature descriptions are short two-sentence summaries, not long-form prose. */
 /* Hallmark · dismissed 49 · The shared button selector explicitly applies white-space: nowrap. */
+@import url('https://fonts.googleapis.com/css2?family=Geologica:CRSV,SHRP,wght@0,0..100,300..700&family=Space+Grotesk:wght@400..700&display=swap');
+
 :root {
   color-scheme: light dark;
-  --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-system: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-body: "Space Grotesk", var(--font-system);
+  --font-display: "Geologica", var(--font-body);
   --cyan: #00c0e8;
   --selection-strength: 30%;
   --neon: #39ff14;
@@ -90,7 +94,7 @@ header .nav-download { padding: 8px 24px; }
 .secondary:hover { border-color: var(--text); text-decoration: none; }
 .button svg { width: 24px; height: 24px; }
 h1, h2, h3, p { margin-top: 0; }
-h1, h2, h3 { overflow-wrap: break-word; min-width: 0; text-wrap: balance; color: var(--text); }
+h1, h2, h3 { font-family: var(--font-display); overflow-wrap: break-word; min-width: 0; text-wrap: balance; color: var(--text); }
 h1 { font-size: clamp(40px,5.9vw,72px); line-height: 1.08; letter-spacing: -.045em; font-weight: 650; margin-bottom: 24px; }
 p { text-wrap: pretty; }
 .hero { color: var(--text); text-align: center; padding: 72px 24px 40px; background: var(--bg); }
