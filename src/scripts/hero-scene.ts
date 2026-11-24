@@ -350,17 +350,36 @@ export function createHeroScene(host: HTMLElement): () => void {
   observer.observe(host);
   document.addEventListener('visibilitychange', () => document.hidden ? pause() : resume(), { signal });
   const pointerArea = screen ? showcase.parentElement! : showcase;
-  pointerArea.addEventListener('pointermove', (event) => {
-    if (event.pointerType !== 'mouse') return;
+  let touchPointer: number | null = null;
+  function trackPointer(event: PointerEvent) {
     trackingPointer = true;
     const rect = pointerArea.getBoundingClientRect();
-    pointerX = (event.clientX - rect.left) / rect.width * 2 - 1;
-    pointerY = (event.clientY - rect.top) / rect.height * 2 - 1;
-  }, { signal, passive: true });
-  pointerArea.addEventListener('pointerleave', () => {
+    pointerX = Math.max(-1, Math.min(1, (event.clientX - rect.left) / rect.width * 2 - 1));
+    pointerY = Math.max(-1, Math.min(1, (event.clientY - rect.top) / rect.height * 2 - 1));
+  }
+  function resetPointer() {
     trackingPointer = false;
     pointerX = 0;
     pointerY = 0;
+  }
+  screen?.addEventListener('pointerdown', (event) => {
+    if (event.pointerType !== 'touch' || touchPointer !== null) return;
+    screen.setPointerCapture(event.pointerId);
+    touchPointer = event.pointerId;
+    trackPointer(event);
+  }, { signal });
+  screen?.addEventListener('lostpointercapture', (event) => {
+    if (event.pointerId !== touchPointer) return;
+    touchPointer = null;
+    resetPointer();
+  }, { signal });
+  pointerArea.addEventListener('pointermove', (event) => {
+    if (event.pointerId === touchPointer || (touchPointer === null && event.pointerType === 'mouse')) {
+      trackPointer(event);
+    }
+  }, { signal, passive: true });
+  pointerArea.addEventListener('pointerleave', (event) => {
+    if (touchPointer === null && event.pointerType === 'mouse') resetPointer();
   }, { signal });
   function dispose() {
     if (disposed) return;
