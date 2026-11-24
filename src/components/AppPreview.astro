@@ -15,7 +15,7 @@ const quickLinks = [
 ];
 
 ---
-<div class="app-preview" role="img" aria-label="Illustrated Credit Calendar feed based on the app: Doctor of Credit, popular posts, categories, a Popular Bank business checking offer, and five navigation tabs.">
+<div class="app-preview" role="img" aria-label="Illustrated Credit Calendar feed based on the app: Doctor of Credit, popular posts, categories, a Sample Bank business checking offer, and five navigation tabs.">
   <div class="preview-ui" aria-hidden="true">
     <div class="status"><b>18:20</b><span class="status-symbols"><span class="signal">••••</span><svg viewBox="0 0 24 20"><path d="M2 6Q12-3 22 6M6 11q6-6 12 0M10 16q2-2 4 0" /></svg><i></i></span></div>
     <div class="feed-heading"><div>Doctor<br><span>of Credit</span></div><span class="popular">Most Popular Posts</span></div>
@@ -26,14 +26,14 @@ const quickLinks = [
     </div>
     <div class="feed-date" data-preview-date>Today</div>
     <div class="offer">
-      <div class="bank-header"><strong><i>▥</i> POPULAR</strong><span>Personal &nbsp; Business &nbsp; Private Client</span></div>
+      <div class="bank-header"><strong><i>▥</i> SAMPLE BANK</strong><span>Personal &nbsp; Business &nbsp; Private Client</span></div>
       <div class="bank-menu">Banking⌄ &nbsp; Financing⌄ &nbsp; Treasury⌄</div>
-      <div class="bank-banner"><div>Earn a $600 cash<br>bonus for your<br>business.<p>Make the switch to Popular Bank and earn a $600 cash bonus when you complete qualifying activities.<sup>1</sup></p><span>Connect with us</span></div></div>
+      <div class="bank-banner"><div>Earn a $600 cash<br>bonus for your<br>business.<p>Make the switch to Sample Bank and earn a $600 cash bonus when you complete qualifying activities.<sup>1</sup></p><span>Connect with us</span></div></div>
       <div class="offer-category">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d={bankAccounts.path} fill-rule="evenodd" /></svg>
         {bankAccounts.label}
       </div>
-      <div class="offer-copy"><h3>Popular Bank $600 Business Checking Bonus</h3><p>Popular Bank is offering a $600 business bonus when you open a business checking account and complete the following requirements</p><small><span data-preview-date>Today</span>, 17:10 · William Charles<br>▢ 16 Comments</small></div>
+      <div class="offer-copy"><h3>Sample Bank $600 Business Checking Bonus</h3><p>Sample Bank is offering a $600 business bonus when you open a business checking account and complete the following requirements</p><small><span data-preview-date>Today</span>, 17:10 · William Charles<br>▢ 16 Comments</small></div>
     </div>
     <div class="next-offer">Get $1,000 of free<br>stock.</div>
     <div class="tab-bar">{tabs.map((label) => <div class:list={['tab', { active: label === 'Feed' }]}><svg viewBox="0 0 24 24"><path d={icons[label.toLowerCase() as keyof typeof icons]} /></svg><span>{label}</span></div>)}</div>
