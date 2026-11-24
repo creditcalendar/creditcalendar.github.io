@@ -83,10 +83,10 @@ function createAtmosphere(pixelRatio: number) {
   }
   // Center the level stage on the phone's contact point.
   const stageRows = 330;
-  const stageColumns = 432;
+  const stageColumns = 648;
   for (let row = 0; row < stageRows; row++) {
     for (let column = 0; column < stageColumns; column++) {
-      const x = (column / (stageColumns - 1) - .5) * 16.5;
+      const x = (column / (stageColumns - 1) - .5) * 24.75;
       const z = stageCenterZ + (.5 - row / (stageRows - 1)) * 8.2;
       addPoint(x, stageFloorY, z, 1);
     }
@@ -94,7 +94,7 @@ function createAtmosphere(pixelRatio: number) {
   // Overlapping ellipsoids give the cloud banks body and soft edges.
   for (let bank = 0; bank < 24; bank++) {
     const upper = bank >= 17;
-    const centerX = upper ? (bank - 20) * 2.2 : (bank - 8) * .98;
+    const centerX = upper ? (bank - 20) * 2.75 : (bank - 8) * 1.225;
     const centerY = upper ? 5.1 + .48 * Math.sin(bank * 1.12) : .55 + .40 * Math.sin(bank * 1.12);
     const centerZ = -10.8 - (bank % 4) * 1.7;
     const samples = upper ? 1250 : 1450;
@@ -104,7 +104,7 @@ function createAtmosphere(pixelRatio: number) {
       const y = Math.random() * 2 - 1;
       const z = Math.random() * 2 - 1;
       if (x * x + y * y + z * z > 1) continue;
-      addPoint(centerX + x * 2.25, centerY + y * verticalSpread + x * .13, centerZ + z * 1.4, 2);
+      addPoint(centerX + x * 2.8, centerY + y * verticalSpread + x * .13, centerZ + z * 1.4, 2);
     }
   }
 
@@ -134,14 +134,14 @@ function createAtmosphere(pixelRatio: number) {
         float glow = exp(-length(vec2(p.x * .8, (p.z - stageCenterZ) * .43)));
         float pulse = .65 + .35 * sin(time * .48 + p.z * .9 + seed * 3.0);
         float sky = mix(.18 + seed * .47, (.34 + seed * .58) * pulse, dust);
-        float terrain = (.32 + glow * .62) * (1.0 - smoothstep(3.8, 7.4, abs(p.x)));
+        float terrain = (.52 + glow * .43) * (1.0 - smoothstep(6.2, 11.6, abs(p.x)));
         opacity = mix(sky * sqrt(distanceFade), terrain * distanceFade, ground);
         opacity = mix(opacity, (.13 + seed * .28) * sqrt(distanceFade), cloud);
         highlight = ground * glow * .48;
         softness = max(nearBlur, cloud * .18);
         gl_Position = projectionMatrix * view;
         float skySize = clamp((8.0 + seed * 17.0) / depth, 1.15, 3.8) + nearBlur * 9.0;
-        float terrainSize = clamp(4.2 / depth, .68, 1.3);
+        float terrainSize = clamp(5.1 / depth, .82, 1.55);
         float pointSize = mix(skySize, terrainSize, ground);
         float cloudSize = clamp((12.5 + seed * 15.0) / depth, .72, 1.9);
         pointSize = mix(pointSize, cloudSize, cloud);
@@ -332,8 +332,11 @@ export function createHeroScene(host: HTMLElement): () => void {
     camera.bottom = -halfHeight;
     camera.updateProjectionMatrix();
     if (atmosphere) {
-      atmosphere.camera.aspect = width / height;
-      atmosphere.camera.updateProjectionMatrix();
+      // Render beyond the stage without moving or rescaling its original framing.
+      const stageHeight = showcase.clientHeight;
+      if (stageHeight) {
+        atmosphere.camera.setViewOffset(width, stageHeight, 0, (stageHeight - height) / 2, width, height);
+      }
     }
     renderer.setSize(width, height);
     resume();
