@@ -75,7 +75,7 @@ header nav a { padding: 10px 12px; transition: color .18s; }
 header nav a:hover:not([aria-current]) { color: var(--text); text-decoration: none; }
 header .brand:hover { text-decoration: none; }
 header nav { gap: 4px; }
-.navigation { padding: 4px 8px 4px 24px; display: flex; align-items: center; gap: 24px; }
+.navigation { padding: 4px 4px 4px 24px; display: flex; align-items: center; gap: 24px; }
 .brand { display: flex; align-items: center; gap: 12px; font-weight: 650; font-size: 18px; letter-spacing: -.4px; white-space: nowrap; }
 .brand .app-icon { width: 1.15em; height: 1.15em; }
 .brand img { border-radius: .22em; }
@@ -159,7 +159,7 @@ footer p { color: var(--muted); font-size: 13px; margin: 8px 0 0; }
 .app-icon img { display: block; width: 100%; height: 100%; }
 @media (max-width: 850px) {
   header .navigation { border-radius: 32px; }
-  .navigation { flex-wrap: wrap; gap: 4px 12px; padding: 4px 12px; }
+  .navigation { flex-wrap: wrap; gap: 4px 12px; padding-inline-start: 12px; }
   .brand { font-size: 16px; }
   nav { order: 3; justify-content: center; width: 100%; gap: 28px; }
   .nav-download { margin-left: auto; }
@@ -179,12 +179,11 @@ footer p { color: var(--muted); font-size: 13px; margin: 8px 0 0; }
   .hero .actions { flex-direction: column; }
   .showcase { margin-top: 36px; }
   .feature-grid { grid-template-columns: minmax(0,1fr); }
-  .navigation { padding-left: 16px; padding-right: 16px; gap: 8px; }
   .brand { font-size: 14px; gap: 8px; }
   nav { gap: 20px; font-size: 13px; }
   header nav { gap: 0; justify-content: space-between; }
   header nav a { padding: 10px 6px; font-size: 12px; }
-  header .navigation { padding: 4px 10px; gap: 4px 8px; }
+  header .navigation { padding-inline-start: 10px; gap: 4px 8px; }
   header .brand { gap: 6px; font-size: 13px; }
   header .nav-download { padding: 8px 12px; font-size: 12px; }
   .info-panel { padding: 24px; }
