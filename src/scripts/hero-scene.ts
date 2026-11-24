@@ -81,15 +81,13 @@ function createAtmosphere(pixelRatio: number) {
       0,
     );
   }
-  // Sample a level stage in staggered, oblique rows.
+  // Center the level stage on the phone's contact point.
   const stageRows = 330;
   const stageColumns = 432;
   for (let row = 0; row < stageRows; row++) {
     for (let column = 0; column < stageColumns; column++) {
-      const across = (column - stageColumns / 2 + (row % 2) * .5) * (16.5 / stageColumns);
-      const back = 2.7 - row * (14 / stageRows);
-      const x = across * .96 + back * .28;
-      const z = back * .96 - across * .28;
+      const x = (column / (stageColumns - 1) - .5) * 16.5;
+      const z = stageCenterZ + (.5 - row / (stageRows - 1)) * 8.2;
       addPoint(x, stageFloorY, z, 1);
     }
   }
@@ -260,6 +258,7 @@ export function createHeroScene(host: HTMLElement): () => void {
   let elapsed = 0;
   let previousFrame: number | undefined;
   let screenWidth = 0;
+  const stagePivot = new Vector3(0, stageFloorY, stageCenterZ);
   const stageContact = new Vector3();
   const phoneFoot = new Vector3();
   const stageViewRotation = new Quaternion();
@@ -272,16 +271,19 @@ export function createHeroScene(host: HTMLElement): () => void {
     material.uniforms.time.value = screen ? elapsed : time * .001;
     if (screen && atmosphere) {
       const ease = 1 - Math.exp(-delta * (trackingPointer ? 5 : 1.7));
-      const yaw = trackingPointer ? -pointerX * .72 : Math.sin(elapsed * .19) * .16;
-      const pitch = trackingPointer ? pointerY * .20 : Math.sin(elapsed * .14) * .025;
+      const yaw = trackingPointer ? -pointerX * .72 : 0;
+      const pitch = trackingPointer ? pointerY * .20 : 0;
       const stageRotation = atmosphere.scene.rotation;
       stageRotation.y += (yaw - stageRotation.y) * ease;
       stageRotation.x += (pitch * .55 - stageRotation.x) * ease;
+      // Keep the ground under the phone fixed while the stage turns.
+      stageContact.copy(stagePivot).applyEuler(stageRotation);
+      atmosphere.scene.position.copy(stagePivot).sub(stageContact);
       // The phone follows the stage normal, expressed in the camera's view.
       stageViewRotation.copy(atmosphere.camera.quaternion).invert().multiply(atmosphere.scene.quaternion);
       points.rotation.setFromQuaternion(stageViewRotation);
       // Project the floor contact into the phone's orthographic coordinates.
-      stageContact.set(0, stageFloorY, stageCenterZ).applyEuler(atmosphere.scene.rotation).project(atmosphere.camera);
+      stageContact.copy(stagePivot).project(atmosphere.camera);
       phoneFoot.set(0, -phoneHalfHeight, -phoneThickness / 2).applyEuler(points.rotation);
       const footScale = 1 / (1 - phoneFoot.z / phonePerspective);
       points.position.set(
