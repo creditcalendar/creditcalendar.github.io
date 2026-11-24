@@ -22,12 +22,10 @@ const isCurrent = (path: string) => path === '/' ? Astro.url.pathname === '/' : 
     <meta property="og:type" content={article ? 'article' : 'website'} />
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={new URL('/assets/images/social-icon.png', Astro.site)} />
-    <link rel="icon" type="image/x-icon" href="/assets/img/favicons/favicon.ico?v=2" />
-    <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicons/favicon-light-32.png" />
-    <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicons/favicon-light-16.png" media="(prefers-color-scheme: light)" />
-    <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicons/favicon-light-32.png" media="(prefers-color-scheme: light)" />
-    <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicons/favicon-dark-16.png" media="(prefers-color-scheme: dark)" />
-    <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicons/favicon-dark-32.png" media="(prefers-color-scheme: dark)" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicons/favicon-light-16.png?v=3" media="(prefers-color-scheme: light)" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicons/favicon-light-32.png?v=3" media="(prefers-color-scheme: light)" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicons/favicon-dark-16.png?v=3" media="(prefers-color-scheme: dark)" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicons/favicon-dark-32.png?v=3" media="(prefers-color-scheme: dark)" />
     <link rel="apple-touch-icon" href="/assets/img/favicons/apple-touch-icon.png" />
     <link rel="alternate" type="application/rss+xml" title="Credit Calendar updates" href="/feed.xml" />
   </head>
